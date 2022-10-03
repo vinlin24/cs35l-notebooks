@@ -205,11 +205,84 @@ C-x C-b                 list buffers
 C-x b <buffer name>     switch to a buffer
 ```
 
-### Basic Commands
+### Editor Navigation: Moving the Point
+
+> Arrow keys work too, but learning the dedicated key binds ensure that they work on all terminals and keyboards.
+
+The current cursor position is called the **point**.
+
+Smaller strides visualized:
+```
+                         ^ C-p
+                         |
+C-a <----- M-b <-- C-b <-+-> C-f --> M-f -----> C-e
+                         |
+                         v C-n
+```
+
+At the **character level**:
+```
+C-f     Move point forward one character
+C-b     Move point backwards one character
+```
+
+At the **word level**:
+```
+M-f     Move point forward one word
+M-b     Move point backwards one word
+```
+
+At the **line level**:
+```
+C-e     Move point to end of current line
+C-a     Move point to start of current line
+C-p     Move point up one line
+C-n     Move point down one line
+```
+
+These are especially useful to set up subsequent strokes like `C-a C-k` to delete the entire line or starting new lines with `C-e RET` (below), `C-a C-p RET` (above), etc.
 
 
+At the **sentence level**:
+```
+M-f     Move to end of next sentence
+M-b     Move to beginning of previous sentence
+```
 
+At the **page level**:
+```
+C-v     Scroll down one page worth
+M-v     Scroll up one page worth
+```
 
+At the **buffer level**:
+```
+M-<     Move point to start of buffer
+M->     Move point to end of buffer
+```
+
+From **anywhere**:
+```
+M-g M-g NUM RET     Go to line number NUM
+```
+
+These are especially useful when setting up searches for the "first/last" occurrence of something.
+
+At any point, you can use `C-L` to vertically center the point if possible. Use `C-L` again to bring the current line to the top of the viewport.
+
+### Fixing Mistakes
+
+While still learning, it's important to know these few to get back to familiar territory when something goes wrong:
+
+```
+C-/             Undo the last command (only if text was modified)
+C-g             Quit current command or exit command minibuffer
+ESC ESC ESC     Universal "get out" - quit command, window, etc.
+C-x C-s         Save current file
+C-x C-f         Open/return to a file, creating it if necessary
+C-x C-c         Exit Emacs
+C-z             Temporarily suspend Emacs (enter fg to re-enter)
+```
 
 ### Help System
 
@@ -218,24 +291,29 @@ The help system makes Emacs a "self-explanatory" system. `C-h` is the designated
 ```
 C-h b                           list key bindings
 C-h k KEY                       list one binding
+C-h a <regex> RET               search for a command
 M-x apropos RET <query> RET     search for a command
 ```
 
-### Shell within Emacs
+### Extended Commands
 
-Run a command as a separate, one-off shell process:
+`C-x` is the designated **eXtended command key**, which starts keystroke chords for common commands, like `C-x C-f` to open a file.
 
+`M-x` is the designated **eXtended named command key**, which focuses a command **minibuffer** at the bottom of the terminal, below the mode bar. This minibuffer is itself a buffer, and in it you can write the full name of commands.
+
+After attempting to use the full name for a command that has a `C-x` shortcut, Emacs will tell you what the shortcut is for future use.
+
+There is a special command that allows you to repeat another command:
 ```
-M-! <command> RET
+C-u NUM KEY     perform command NUM times
+```
+but with special defined behavior that may differ from if you just run the KEY pattern NUM times. For example:
+```
+C-u 2 C-k       delete content of two lines and their newlines
+C-k C-k         delete content of a line, and then its newline
 ```
 
-Same thing but takes input from a buffer and then feeds it to the shell command (takes all characters in **current region**, feem them to the command as its stdin, and then take the output of the command and the *shell command output buffer*):
-
-```
-M-| <command> RET
-```
-
-### Window Navigation
+### Window and Buffer Navigation
 
 ```
 C-x 2       split (duplicate) current window into two
@@ -246,15 +324,35 @@ C-x 1       kill all windows except the current window
 
 Opening another window for the same buffer does not duplicate the buffer; any edits in one buffer will affect the other(s). You can still use this when you want to reference some other part of the buffer while typing in another region.
 
+```
+C-x C-b     list the current buffers
+C-x b       switch to a specific buffer
+C-x s       prompt save for some buffers
+C-x 4 C-f   open file in another window
+```
+
+### Shell within Emacs
+
+Run a command as a separate, one-off shell process:
+
+```
+M-! <command> RET
+```
+
+Same thing but taking input from a buffer and then feeds it to the shell command (takes all characters in **current region** and pipes them to the command as its stdin, and then takes the output of the command and pipes it to the *shell command output buffer* like normal):
+
+```
+M-| <command> RET
+```
+
 ### Selection Manipulation
 
-Concept of the "current region (of current buffer)"
+Concept of the "current region (of current buffer)":
 
-- Current cursor position is called the **point**
-- You can place pointers at other positions called **marks**
+- You can save pointers called **marks** at arbitrary positions
 - The **current region** is all the characters between the mark and the point
 
-You can set a mark with `C-SPC`. An example of selecting a region of text:
+You can set a mark at the current point with `C-SPC`. An example of selecting a region of text:
 
 ```
 M-<             go to start of buffer
@@ -265,6 +363,18 @@ M-|             pipe buffer into a shell command
 
 You can find out where your mark is with `C-x C-x`, which exchanges point and mark (selects the text between them). You can `C-g` to cancel the selection.
 
+### Text Manipulation
+
+Emacs distinguishes **killing** from **deleting**. When you **kill** text, it is actually saved in a special buffer called the **kill ring**, and content in here can be reinserted (aka **yanked**) at the point. Most commands that perform bulk removal of text actually *kill* the text, not *delete* it.
+
+```
+C-k     kill from point to end of line
+C-w     kill current selection
+M-w     copy curernt selection
+C-y     yank most recent kill
+M-y     cycle the text to yank through kill history
+```
+
 ### Modes
 
 Emacs is a **modeful** editor. That means the current state of Emacs not only includes the contents of the current files being edited but also what way you intend to be using the editor next. A **mode** is like a method of interacting with the editor.
@@ -272,23 +382,19 @@ Emacs is a **modeful** editor. That means the current state of Emacs not only in
 - Upside: more efficient for experts
 - Downside: confusing/tricky for non-experts
 
-`C-h m` brings up a buffer that describes what mode you are in. Being in "editor" mode is called **Fundamental** mode. You can also be in **Shell** mode or **dired** mode. The mode you are in affects the keys you input. You can see the name of the major mode you are currently in with the **mode bar** just above the minibuffer.
+```
+M-x MODENAME            switch to mode
+```
 
-Enter directory-editing mode:
+`C-h m` brings up a buffer that describes what mode you are in. Being in "editor" mode is called **Fundamental** mode. You can also be in **Shell** mode or **dired** (directory-editing) mode. The mode you are in affects the keys you input. You can see the name of the major mode you are currently in with the **mode bar** just above the minibuffer.
 
 ```
-C-x d <dirname> RET
+C-x d <dirname> RET     enter dired mode for directory
 ```
 
 ### Various Other Commands and Tricks
 
-Go-to line:
-```
-M-x M-x
-M-g M-g
-```
-
-> Newline character is ^J in ASCII
+- The newline character is ^J in ASCII
 
 ## Software Philosophies
 
