@@ -533,3 +533,322 @@ So Python is a scripting language that tries to do everything. Theoretically, if
 > All 3 languages, BASIC, Perl, and Python can be either compiled or interpreted.
 
 > The tradition in Unix is that TAB stops at 8 characters.
+
+# Week 2 Discussion
+
+## Lisp Basics
+
+**LISP**: LISt processor because the source code is comprised of lists
+
+### Within Emacs:
+
+- In Emacs, you can use `M-: RET` to enter an `Eval` minibuffer
+- In Emacs, you can also eval a line in a main buffer by moving the cursor tot he end f the Lisp list and then entering `C-x C-e.`
+- In Emacs, you can directly enter an initial buffer without a file called the \*scratch\* buffer. You do this by pressing `q` right after starting up Emacs.
+
+Lisp interaction mode:
+- Move cursor to end of LIsp expression LIne
+- `C-j` to evaluate this line
+- Output will be shown and written to the buffer
+- Use instead of C-x C-e if you want the history to be saved in the buffer itself
+
+### Atom
+
+**Atoms** are words that cannot be divided into any smaller parts, such as:
+- Numbers: 30, #b111 (binary), #x6e3 (hexadecimal)
+- Strings: "Hello", "buffer-name"
+
+### Variables
+
+Define and set a variable:
+
+```lisp
+defvar x 5
+defvar y 5
+```
+
+Set the value of an existing variable:
+
+```lisp
+setq x 5
+setq y 5
+```
+
+### Expressions
+
+The general syntax is `([Prefix] argument_1 argument_2 ...)`
+
+Written as lists using *prefix notation*:
+
+```lisp
+(+ 1 2)
+```
+
+Recursive (nested) expressions:
+
+```lisp
+(* (+ 1 2) (+ 2 3))
+```
+
+### Quote Symbol
+
+This will return the list itself i.e. `(+ 1 2)` instead of the result of its evaluation i.e. `3`:
+```lisp
+(quote (+ 1 2))
+'(+ 1 2) ; shorthand
+```
+
+### Local Variables
+
+Local binding:
+```lisp
+(let ((a 1) (b 2)) ; local binding
+    (+ a b)        ; body
+)
+```
+
+### Control Flow
+
+Comparison operator
+
+```lisp
+(= 1 2)
+(> 2 2)
+```
+
+If statements
+
+```lisp
+(if (= 1 2));
+    "Yes"; will run if true
+    "No";  will run if false
+)
+```
+
+Here `;` is used to separate the lines of code, not only marking the start of comments.
+
+### Functions
+
+```lisp
+(defun add (x y) (+ x y))
+;     name  args   body
+
+; now it can be called directly with:
+(add x y)
+
+; you can define a function to be interactive
+; such functions can be called via M-x
+(defun add (x y) (interactive) (+ x y)
+```
+
+---
+
+> Small Bash Note: `.bash_profile` is for code to be only run once, like modifying environment variables such as `PATH`. `.bashrc` is for code to be run every time a new shell is started.
+
+## ELisp
+
+LISP, developed by John McCarthy in 1958, is the first **functional language**.
+
+## Pure Functions
+
+Also known as **deterministic**, functions that have two properties:
+1. Given a specific input `x`, the function *always* returns the same output `y`.
+2. It doesn't modify any data beyond initializing local variables required to compute its output.
+
+```c
+// Pure
+int f(int p) {
+    int q = 5 * p * p;
+    return q;
+}
+
+// Impure
+int z;
+int f(int p) {
+    return p * z++;
+}
+```
+
+Notice that as long as you're using or modifying a global mutable variable, your function risks not being a pure function.
+
+Functional languages...
+- Only composed of functions
+- Can't change variable state (no `p = p + 1`)
+- No loops, only recursion (because the counter `i` changes its state)
+- Order of execution is not important because all functions are pure, so they won't have any *side effects* by definition.
+
+## Data Types
+
+### Integer Type
+
+These are **all* valid integers:
+```
+-1
+1
+1.
++1
+```
+
+*fixnum*
+- Its range depends on the machine: `M-: RET (print most-positive-fixnum) RET`
+
+*bignum*:
+- Can have arbitrary precision
+- Most languages implement this with a *linked list*
+
+### Floating Point Type
+
+All of these are the *floating point* number 1500:
+```
+1500.0
++15e2
+15.0e+2
++1500000e-3
+.15e4
+```
+
+### Character Type
+
+Uses ASCII encoding; a character in ELisp is nothing more than an integer
+
+### Symbol Type
+
+```lisp
+foo             ; symbol named 'foo'
+FOO             ; symbol named 'FOO'
+1+              ; symbol named '1+'
+\+1             ; symbol named '+1'
+\(*\ 1\ 2\)     ; symbol named '(* 1 2)' (you're an idiot)
+```
+
+NOTE: In Common Lisp, lower case characters are folded to upper case characters. (?)
+
+### List Type
+
+```
+(A 2 "A")       ; list of 3 elements
+()              ; list of no elements (empty list)
+nil             ; also the empty list
+("A ()")        ; list of 1 element: the string "A"
+(A ())          ; list of 2 elements: A and empty list
+((A B C))         ; list of 1 element: a list with three elements
+```
+
+You can split lists across multiple lines:
+```lisp
+'(rose
+  violet
+  daisy
+  buttercup)
+```
+
+Remember the quote is necessary because we want the list *itself* and not to evaluate its contents.
+
+### List Evaluation
+
+Evaluating a list can result in:
+- Error message
+- Nothing (returns the list itself using `quote`)
+- Treat the first symbol in the list as a command and return its result `(+ 2 2)` -> `4`
+- Evaluate an expression from a buffer directly with `C-x C-e` or `C-j`
+
+### Function Types
+
+- All functions are defined in terms of other functions except for a few called **primitive functions** written in C
+- A **lambda expression** can be called as an *anonymous function*. This is useful because many functions only need to be used once.
+
+Examples:
+
+- `quote` returns object, without evaluating it
+
+    ```lisp
+    (quote (+ 2 2))
+    '(+ 2 2)
+    ```
+
+- `car` returns the first element in a list
+
+    ```lisp
+    (car '(rose violet daisy buttercup))
+    ; rose
+    ```
+
+- `cdr` returns the rest of the list
+
+    ```lisp
+    (cdr '(rose violet daisy buttercup))
+    ; (violet daisy buttercup)
+    ```
+
+- `cons` constructs lists
+
+    ```lisp
+    (cons 'I '(like lisp))
+    ; (I like lisp)
+    (cons (car '(rose violet daisy buttercup)) (cdr '(rose violet daisy buttercup)))
+    ; (rose violet daisy buttercup)
+    ```
+
+- `append` attaches one list to another
+  
+    ```lisp
+    (append '(1 2 3 4) '(5 6 7 8))
+    ; (1 2 3 4 5 6 7 8)
+    (cons '(1 2 3 4) '(5 6 7 8))
+    ; ((1 2 3 4) 5 6 7 8)
+    ```
+
+### Booleans
+
+True is `t` and false is `nil`.
+
+### Exercises
+
+```lisp
+quote (1 2 3))                      ; (1 2 3)
+'(1 2 3)                            ; (1 2 3)
+(list (+ 1 2) '(+ 1 2))             ; (3 (+ 1 2))
+(cons (+ 1 2) '(3 4))               ; (3 3 4)
+(+ 10 (car '(1 2 3)))               ; 11
+(append '(1 2) '(3 4))              ; (1 2 3 4)
+(reverse (append '(1 2) '(3 4)))    ; (4 3 2 1)
+(cdddar (1 2 3 4 5 6 7))            ; ERROR (unless cdddar defined)
+```
+
+### Defining Functions
+
+```lisp
+(defun function-name (arguments...)
+    "optional-documetation..."
+    (interactive argument-passing-info) ; optional
+    ; body
+)
+```
+
+Example:
+
+```lisp
+(defun multiply-by-thirty-five (number)
+    "Multiply NUMBER by Thirty Five."
+    (* 35 number)
+)
+
+; calling the function
+(multiply-by-thirty-five 2) ; 70
+```
+### Customizing Emacs
+
+Some Emacs jargon:
+
+
+| Term   | Meaning                         |
+| ------ | ------------------------------- |
+| Point  | Current position of the cursor  |
+| Mark   | Another position in the buffer  |
+| Region | Text between the mark and point |
+
+The function `point` returns the current position of the cursor as a number.
+
+...
+
+`save-excursion` is often used to keep point in the location expected by the user.
