@@ -592,7 +592,7 @@ Recursive (nested) expressions:
 
 ### Quote Symbol
 
-This will return the list itself i.e. `(+ 1 2)` instead of the result of its evaluation i.e. `3`:
+This will return the data structure itself i.e. `(+ 1 2)` instead of the result of its evaluation i.e. `3`:
 ```lisp
 (quote (+ 1 2))
 '(+ 1 2) ; shorthand
