@@ -140,7 +140,7 @@ Emacs however checks if you attempt to recurse like:
 
 ## Python
 
-More of a **general purpose programming language** - designed for you to *write* an application of your own.
+More of a **general purpose programming language** - designed for you to *write* an application of your own. It was originally designed to teach high school students.
 
 ### Why Python?
 
@@ -159,14 +159,56 @@ As a scripting language, it's still one of the leading in performance.
 
 Python is **object-oriented**. Historically, it didn't actually start out that way. Every value is an object.
 
-Every object has:
+*Every value is an object.* Every object has:
 - Identity - *cannot be changed*
 - Type - *cannot be changed*
 - Value - *can be changed, but only if object is **mutable***
 
-Comparisons:
-```python
-a is b   # Identity checking (like 'pointer comparison')
-a == b   # Value comparison
-type(a)  # Return a's type
+### Python vs. Shell vs. Emacs Scripting
+
+Lisp is an ASL for Emacs, like an extension language. It uses existing code, *Emacs primitives*.
+
+Shell uses existing programs.
+
+Python was designed to be a *general-purpose programming language*, so there are no "primitives" you bring together - you just write in the language altogether to program from scratch. However, it also converges to the same phenomenon where programmers glue together existing modules like PyTorch and SciPy.
+
+What makes a language a scripting language is one that supports this *kind* of software construction.
+
+> The goal of a **scripting language** is you don't code from scratch. You glue together other people's code. You provide the cement, and the other people provide the bricks.
+
+### Python Typing
+
+In old Python, `int` used to have fixed size, so there was the distinction between integers and longs.
+
+Main *categories* of types:
+- None
+- Numbers
+- Sequences
+- Callables
+
+Underlying `list` allocation stuff:
+
+- Probably uses cache size to determine starting size
+- After that, reallocation uses geometric resizing (approximately nine-eights according to [mCoding](https://www.youtube.com/watch?v=rdlQzhP71pQ))
+- The total cost of calling `list.append` N times is $O(N)$. Because the **amortized cost** of this operation is $O(1)$.
+
+Visualization: image that the list length is doubled for every allocation, which isn't true, but the asymptotic time is the same.
+
 ```
+[e e e e e e e e e e e e e e e e e e e e e e]
+  ... |<3>|<--2 ops-->|<-------1 op-------->|
+```
+
+The total cost is $\frac{1}{2}*2 + \frac{1}{4}*2 + \frac{1}{8}*3 + ...$, which converges to 2, which is $O(1)$.
+
+There's a school of thought that teaches to use tuples over lists when possible because the former are *safer*.
+
+### The Buffer Type
+
+Like multiple strings. When you're done working with it, you can convert it to a string with `str(x)`.
+
+*Only available in Python 2, I think.*
+
+Historical Note:
+
+Python was not always object-oriented; it started with functions but no classes. When classes were introduced, they implemented *methods* as functions that explicitly take the `self` first argument, which is similar to the invisible behavior in C++ OOP.
