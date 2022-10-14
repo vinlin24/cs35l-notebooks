@@ -212,3 +212,25 @@ Like multiple strings. When you're done working with it, you can convert it to a
 Historical Note:
 
 Python was not always object-oriented; it started with functions but no classes. When classes were introduced, they implemented *methods* as functions that explicitly take the `self` first argument, which is similar to the invisible behavior in C++ OOP.
+
+# Discussion
+
+## SASS
+
+A stylesheet language that's compiled into CSS. Allows usage of variables, nested rules, mixins (styles that can be reused), functions, etc.
+
+## Regular Expressions
+
+- grep vs. egrep (`egrep` or `grep -E`)
+- Anchors `^$`
+- Quantifiers `*?` and `+{}` (extended)
+- Sets, ranges, negation `[^a-z]`
+- Groups `(lol|okay)`
+
+## Common Use Cases in Web Apps
+
+- Validating phone numbers
+- Validating emails
+- Extracting such information
+
+So apparently in *extended* regular expressions, you can use the OR `|` operator outside of a group `()`.
