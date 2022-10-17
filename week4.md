@@ -81,3 +81,73 @@ This variable is stored in and can be modified with `sys.path`, which is a `list
 >
 > Classes are about runtime behavior (runtime notion). You want inheritance to be independent of package hierarchy. Classes are only concerned with their own behavior, "what to do next", so it should be able to pull code from anywhere in the codebase. How developers *organize* that codebase is made possible with packages.
 
+# Client-Server Computing
+
+**Common Concepts between Node+React and POSIX:**
+
+- Quoting
+- Configuration
+
+## Alternatives to the Client-Server Model
+
+Definition of Client-Server:
+
+```
++----------+         +------------+
+| browsers | <-----> | web server |
++----------+         +------+-----+
+                            |
+                         +--+--+
+                         | DB  |
+                         +-----+
+```
+
+0. **Single computer** (CS 31 assignments - "you assume it's a solved problem")
+
+1. **Peer-to-peer (P2P)**: Decentralized approach. If a peer doesn't have a resource, the request is redirected to another resource. The main advantage of this is that it is more fault-tolerant: a single peer going down doesn't bring the system down. The downside is that it is more involved to maintain a consistent state across every peer. This is in contrast to the less fault-tolerant but more state-consistent client-server model.
+
+2. **Primary secondary**: One primary machine that serves as the "overseer" - it keeps track of how the application is split up among numerous secondary servers. The secondary servers receive a small "subproblem" of the application from the primary server and return any results.
+
+## Performance Issues
+
+Traditional programming performance metrics:
+
+- CPU time: how many CPU instructions executed (roughly proportional to the amount of energy consumed)
+- Real time: amount of time elapsed
+- RAM
+- I/O
+
+Networking performance metrics:
+
+- **Throughput**: Number of client requests per second that the system can handle (assuming individual requests and responses are reasonably small and approximately equally sized); bigger is better.
+- **Latency**: Delay between a request to the server and the response back from the server; smaller is better.
+
+To improve **throughput**:
+
+- You can perform actions "out of order" (compared to "request order").
+- You can perform actions *in parallel*.
+
+To improve **latency**:
+
+- You can use **caching**.
+
+## Client-Server Correctness Issues
+
+Throughput fixes:
+
+- Out-of-order execution, can "mis-order" transactions.
+
+Latency fixes:
+
+- **Stale caches**, requires **cache validation**, which could be an expensive operation.
+
+## Task Networking Styles
+
+**Circuit switching**
+
+- System is connected to the nearest central office, which can connect to other central offices. In the end, you get a path between the one computer to the other.
+- However, you have temporary ownership of a wire during the transaction.
+
+**Packet switching**
+
+- Connected to a little computer that breaks the signal into a bunch of small messages called **packets**. Each packet is sent to a local **router** that sends the packets along the network to the destination. Each packet travels independently and possible along different paths, and they do so very quickly, so it does not back up the network
