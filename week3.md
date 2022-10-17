@@ -37,10 +37,10 @@ Trying to evaluate a variable that's never been assigned, you get a *runtime err
 
 ### Fundamental Data Structures
 
-Emacs uses the same notation for programs and data i.e. we use *data notation* to write our programs. The fundamental data structure in Lisp is *list*. There's another one called *pair*. A list is like a linked list of pairs.
+Emacs uses the same notation for programs and data i.e. we use *data notation* to write our programs. The fundamental data structure in Lisp is *list*. There's another one called *cons*, which is just a pair of values. A list is singly-linked list of cons.
 
 ```
-# This is a pair
+# This is a cons
 [A|B]
 (A . B)
 
