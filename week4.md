@@ -152,13 +152,21 @@ Latency fixes:
 
 - Connected to a little computer that breaks the signal into a bunch of small messages called **packets**. Each packet is sent to a local **router** that sends the packets along the network to the destination. Each packet travels independently and possible along different paths, and they do so very quickly, so it does not back up the network
 
-*Missed first 8-ish minutes of lecture (??)*
+# The Internet
 
-- Best effort transmission/no guarantees
-- Problems:
-  - Packets can be lost
-  - Packets can be received out of order
-  - Packets can be duplicated via a mechanism called **bridges**
+## Packet Switching
+
+Idea originally proposed by Paul Baran (1960s, RAND).
+
+Sold to Department of Defense as a reliable way to communicate in the event of nuclear war. *Rerouting* in the event of an office goes down gives it an edge over traditional **circuit switching**.
+
+Packet switching is a best effort transmission/no guarantees (circuit-switching is a *guarantee* between the two machines)
+
+**Problems:**
+- Packets can be lost - if some router along the way gets overloaded, some packets may be discarded
+- Packets can be received out of order
+- Packets can be duplicated via a mechanism called **bridges**
+- All routing decisions are local to the individual routers, so packets may be directed into a loop
 
 ## Internet Protocol (IP) Suite
 
