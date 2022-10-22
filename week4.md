@@ -341,3 +341,165 @@ Markup language for documents (1980s).
 Extensible bracket types allow you to define new features without making breaking changes to the language. `<QUOTE>` is one type of bracket with its closing tag `</QUOTE>`, `<ITALIC>` is another, etc.
 
 The structure of the document forms a tree structure: the content inside `<ITALICS>` is a child node to `<QUOTE>`.
+
+# Week 4 Discussion: Midterm Review
+
+## Pattern Matching
+
+### Glob (Wildcards)
+
+Used in file management: `man 7 glob`
+
+- `?` - match one, any character
+- `*` - match any number of characters, including the empty string
+- `{pdf, jpeg}` - match multiple literals
+- `[]` - character set that supports *ranges*, similar to regex
+- `[!]` - complement of a character set if `!` is the first character
+- `\` - escape character
+
+
+## Permissions
+
+- 3 permissions: read (r), write (w), execute (x)
+- 3 user groups: user (**owner)**) (u), group (g), others (o)
+- Each 0-7 in numerical modes (one octal digit), for a total of 3 octal digits for a file (e.g. 755 for `rwxr-xr-x`)
+
+A set of rwx permissions on a file is called "**sensible**" if the owner has al the permissions of the group and the group has all the permission of others. For example:
+
+- 551 (r-x|r-x|--x) is sensible. The owner's permissions are a *superset* of those of the group.
+- 467 (r--|rw-|rwx) is not. The group has `w` permission while the owner doesn't.
+
+Non-sensible permissions don't make sense because the *owner* is considered to be the most closely related to the file, so they should have the most access.
+
+**How many distinct sensible permissions are there?**
+
+Solution:
+
+Consider r, w, x permissions separately. For each of then, there are 4 ways to gst sensible permissions for u, g, and o (in binary, 000, 100, 110, 111).
+
+Total: $4^3=64$
+
+## Links
+
+- **Soft link** (**symbolic link**) is only a pointer
+- **Hard link** creates a copy of the target file
+- **Dangling link**: a soft link that points to a nonexistent file
+
+**Give an example of how renaming a dangling symbolic link can transform it into a non-dangling symbolic link.**
+
+Soft links can be linked to a relative path. Suppose `c` has content `b`, but `b` only exists as `temp/b` relative to the current working directory. We can use `mv c temp` to make the relative path `b` now work since `c` is now in the same directory as `b`.
+
+## Emacs
+
+**Explain how to arrange for Emacs to treat C-t as a command that causes Emacs to issue a message like this:**
+
+*some time string I missed it lol*
+
+**In the echo area.**
+
+1. Define a function.
+2. Use `current-time-string` to get current time, and use `concat` to concetatne time with other text
+3. Make the function `interactive`
+4. Use `message` for output in the echo area
+   ```lisp
+   (defun print-time ()
+       (interactive)
+       (message (concat "It is now" (current-time-string) ".")))
+   ```
+5. Create the `C-t` key binding:
+   ```
+   M-x global-set-key C-t print-time RET
+   ```
+
+## Shell
+
+- **grep**: search for text that matches the give pattern
+- **sed**: streaming text editor
+- **shuf**: randomly shuffle the input
+- Maybe also **awk**: a scripting language for editing text
+
+### Shell Script
+
+Looping:
+
+```sh
+for i in {1..100}
+do
+    echo $i
+done
+```
+
+You can use the `expr` command to evaluate an expression. You can also use *compound expansion* with `((expression))` syntax.
+
+Conditionals
+
+```sh
+if [ condition ]
+then
+    # body
+fi
+```
+
+**What does this script do?**
+
+```sh
+#!/bin/sh
+atom='[a-zA-Z0-9]+'         # at least 1 alphanumeric character
+string='\\"([^"\]|\\.)*\\"' # what the fuck
+word="($atom|$string)"
+words="$word(\\.$word)*"
+grep -E "$words" | grep ' '
+```
+
+This script wil print any line in the standard input that satisfies both of the following:
+- Contains a space
+- Contains a sequence of words specified by `$word`
+
+For `$word`, it matches:
+1. An atom character specified by `$atom`, which is just one or more alphanumeric characters
+2. A sequence of non-double-quote characters that are enclosed with `\"` and if backslash appears, it must be followed by another character (to form an escape sequence)
+
+**What if the `-E` flag is removed?**
+
+BRE is used instead of ERE. Many meta-characters including `(` `|` `)` will then be treated as normal characters.
+
+**How to modify script to only use grep once?**
+
+Use `sed`:
+
+```sh
+grep -E "$words" | sed -n '/ /p'
+```
+
+The captive space means match the space and the `p` means print.
+
+## Practice Midterms
+
+**What is the main difference between a hard link and a symbolic link?**
+
+A hard link increments the file object's reference count. A symbolic link does not increment the file's reference count.
+
+Deleting all hard links to a file (and ceasing all operations that use the file) deletes the file. Deleting symbolic links do not affect the underlying file. A symbolic link can become dangling if the underlying file is deleted.
+
+**Consider the sell command being executed on a device named ubun3 by user groot:**
+
+```console
+ubun3:~/zoo-wee-mama groot$ a b < c | ./d > e
+```
+
+This executes the command named a with b as an argument and the file c as its input. The output of a is then piped into the d file in the current directory. The standard output of the d file is redirected to a file named e in the current directory, creating it if necessary, every time it receives pipeline input.
+
+The programs being executed are a, which is presumably on the user's `PATH`, and d, which is in the current directory.
+
+**Write an ERE that only matches numbers between 0 and 255.**
+
+```
+^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$
+```
+
+Make sure to remember to include `^$`! That constrains the number of digits you can match, and more importantly, it ensures no partial matching.
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });
+</script>
