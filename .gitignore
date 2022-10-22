@@ -1,0 +1,6 @@
+# VS Code workspace settings
+.vscode*/
+*.code-workspace
+
+# Universal exception
+!.gitkeep
