@@ -1,11 +1,9 @@
 # F22 COM SCI 35L Notes
 
-**Course Name:** Introduction to Software Construction
+**Course Name:** Software Construction
 
-**Professor:** Paul R. Eggert<br>
+**Professor:** Paul R. Eggert <br>
 **Section:** 1E (**TA:** Yihan Wang, **LA:** Qianli Wu)
-
-**Final Grade:** N/A
 
 ## Grading
 
