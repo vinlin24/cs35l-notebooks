@@ -208,13 +208,13 @@ Main *categories* of types:
 - Sequences
 - Callables
 
-Underlying `list` allocation mechanism:
+**Underlying `list` allocation mechanism:**
 
-- Probably uses cache size to determine starting size
-- After that, reallocation uses geometric resizing (approximately nine-eights according to [mCoding](https://www.youtube.com/watch?v=rdlQzhP71pQ))
+- Probably uses cache size to determine starting size.
+- After that, reallocation uses geometric resizing (approximately nine-eights according to [mCoding](https://www.youtube.com/watch?v=rdlQzhP71pQ)).
 - The total cost of calling `list.append` N times is $O(N)$. Because the **amortized cost** of this operation is $O(1)$.
 
-Visualization: image that the list length is doubled for every allocation, which isn't true, but the asymptotic time is the same.
+**Visualization:** imagine that the list length is doubled for every allocation, which isn't true, but this doesn't change the asymptotic time, so it simplifies the derivation:
 
 ```
 [e e e e e e e e e e e e e e e e e e e e e e]
