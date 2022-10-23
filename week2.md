@@ -26,7 +26,7 @@
   - [So How Do You Update a File?](#so-how-do-you-update-a-file)
 - [Scripting Languages](#scripting-languages)
   - [History of the Python Programming Language](#history-of-the-python-programming-language)
-- [ELisp Basics](#elisp-basics)
+- [Discussion Notes: ELisp Basics](#discussion-notes-elisp-basics)
   - [Within Emacs](#within-emacs)
   - [The Language](#the-language)
     - [Variables](#variables)
@@ -37,8 +37,8 @@
     - [Numerical Types](#numerical-types)
     - [List Type](#list-type)
     - [Other Types](#other-types)
-    - [Common Functions](#common-functions)
-    - [Exercises](#exercises)
+  - [Common Functions](#common-functions)
+  - [Exercises](#exercises)
   - [Customizing Emacs](#customizing-emacs)
   - [Concept of Pure Functions](#concept-of-pure-functions)
 
@@ -53,9 +53,7 @@ Emacs is built in "layers": it has a C interpreter inside it, and atop it is a L
 +------------------+
 | Lisp code        |
 +------------------+
-+------------------+
 | Lisp interpreter |
-+------------------+
 +------------------+
 | C interpreter    |
 +------------------+
@@ -600,7 +598,9 @@ However, ABC had the philosophy that there is one correct way to do anything.
 
 Python emerged as a combination of ABC as well as the capabilities of Perl.
 
-Python is a scripting language that tries to do everything. "Theoretically, if you know the language very well, you do not have to touch the little languages of the shell."
+Python is a scripting language that tries to do everything.
+
+> Theoretically, if you know the language very well, you do not have to touch the little languages of the shell.
 
 ---
 All 3 languages, BASIC, Perl, and Python can be either compiled or interpreted.
@@ -610,7 +610,7 @@ The tradition in Unix is that TAB stops at 8 characters.
 ---
 
 
-# ELisp Basics
+# Discussion Notes: ELisp Basics
 
 **LISP**: LISt processor because the source code is comprised of lists.
 
@@ -833,7 +833,7 @@ FOO             ; symbol named 'FOO'
 True is `t` and false is `nil`.
 
 
-### Common Functions
+## Common Functions
 
 - `quote` returns object, without evaluating it
 
@@ -875,7 +875,7 @@ True is `t` and false is `nil`.
     ```
 
 
-### Exercises
+## Exercises
 
 ```lisp
 quote (1 2 3))                      ; (1 2 3)
