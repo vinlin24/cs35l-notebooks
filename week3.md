@@ -1,16 +1,29 @@
-# Week 3 Lecture Notes
+**Week 3 Lecture Notes**
 
-# Scripting Case Studies
+- [Emacs Lisp](#emacs-lisp)
+  - [Namespace and Security](#namespace-and-security)
+  - [Fundamental Data Structures](#fundamental-data-structures)
+  - [Emacs Byte-code](#emacs-byte-code)
+  - [The Emacs Interpreter](#the-emacs-interpreter)
+  - [Customizing Key Binds](#customizing-key-binds)
+- [Python](#python)
+  - [Why Python?](#why-python)
+  - [Python Internals](#python-internals)
+    - [Typing](#typing)
+  - [Python vs. Shell vs. Emacs Scripting](#python-vs-shell-vs-emacs-scripting)
+- [Assorted Discussion Notes](#assorted-discussion-notes)
 
-## (Emacs) Lisp
+---
+
+
+# Emacs Lisp
 
 An example of **app-specific language (ASL)**. In some extent, it's an example of the *little languages philosophy*. Creators of Emacs took an existing language and mutated it to suit their particular problem.
 
-### Namespace and Security
 
-Emacs is very traditional - a flat, top-level namespace that can clash with itself.
+## Namespace and Security
 
-This is allowed for example:
+Emacs is very traditional - a flat, top-level namespace that can be prone to clashing. You have a lot of liberty in making problematic changes. This is allowed for example:
 
 ```lisp
 emacs-version
@@ -35,9 +48,10 @@ Trying to evaluate a variable that's never been assigned, you get a *runtime err
 ; "You can interpolate like printf!"
 ```
 
-### Fundamental Data Structures
 
-Emacs uses the same notation for programs and data i.e. we use *data notation* to write our programs. The fundamental data structure in Lisp is *list*. There's another one called *cons*, which is just a pair of values. A list is singly-linked list of cons.
+## Fundamental Data Structures
+
+Emacs uses the same notation for programs and data. In other words, we use **data notation** to write our programs. The fundamental data structure in Lisp is the **list**, which is built from **cons**, which is just a pair of values. A list is singly-linked list of cons.
 
 ```
 # This is a cons
@@ -48,14 +62,14 @@ Emacs uses the same notation for programs and data i.e. we use *data notation* t
 [A| ]->[B| ]->[C| ]->[D| ]->[E|/]
 (A B C D E)
 
-# A nasty combo
+# You can use . to write at the cons level
 [A| ]->[B| ]->[C|D]
 (A B C . D)
 
 # The empty list; also used as the null terminator
 ()
 
-# Thus equivalent to (A B C D E)
+# Thus this is equivalent to (A B C D E)
 (A B C D E . ())
 
 # Nested lists
@@ -65,28 +79,31 @@ Emacs uses the same notation for programs and data i.e. we use *data notation* t
 (A (B C) D)
 ```
 
-In Emacs, the *empty list* is like the *null pointer* - it's byte representation is all 0s as well.
+In Emacs, the *empty list* is like the *null pointer* - its byte representation is all 0s as well.
 
-### Emacs byte-code
 
-Loading source code into current namespace: `M-x load-file RET filename RET`
+## Emacs Byte-code
 
-```lisp
-(distance 3 4) ; ERROR
-; M-x load-file dist.el
-; Now it's as if the source code of dist.el was run
-(distance 3 4)
-; 5.0
+You can load external source code into the current namespace with:
+
+```
+M-x load-file RET filename RET
 ```
 
-As a solution to slow interpreting speed (due to the extensive use of pointers and dereferencing), ELisp uses **byte-codes** like in Python to compile data structures to create compact representations of a program.
+As a solution to slow interpreting speed (due to the extensive use of pointers and dereferencing), ELisp uses **byte-codes** to compile data structures to create compact representations of a program.
 
-byte-code differs from machine code:
+Byte-code differs from machine code:
 
-- PRO: byte-code is *portable* and works on any architecture as it is designed for some abstract machine that the Emacs application knows about.
-- CON: Not as performant as machine code.
+- **PRO:** byte-code is *portable* and works on any architecture as it is designed for some abstract machine that the Emacs application knows about.
+- **CON:** Not as performant as machine code.
 
-For example, abstractly:
+From the GNU documentation:
+
+> Emacs Lisp has a compiler that translates functions written in Lisp into a special representation called byte-code that can be executed more efficiently. The compiler replaces Lisp function definitions with byte-code. When a byte-code function is called, its definition is evaluated by the byte-code interpreter.
+
+The numbers are analogous to opcodes in true machine code. Each number represents a certain elementary operation, like pushing data onto stack memory, adding two values, etc.
+
+For example, abstractly, this may be the compiled byte-code for some function:
 
 ```
   1 push a (arg #1)
@@ -99,11 +116,22 @@ For example, abstractly:
 105 sqrt
 ```
 
-Gets compiled to some octal string `"\1\12\33\2..."`.
+Strung together they are functionally equivalent to the original Emacs function from which it was compiled, but now it can be compactly represented with a byte stream `1 10 27 2 10 27 26 105`.
 
-The byte-code files end with the `.elc` extension. `M-x byte-compile-file RET filename.elc RET` compiles a source code file. Such `.elc` files can also be loaded with `load-file`.
+This in turn is more performant than uncompiled Emacs code because it can be run directly by a byte-code interpreter, in contrast to high-level language that needs to be parsed (tokenized and semantically analyzed) before executing - going off of some scattered knowledge here, anyone feel free to correct me.
 
-### Emacs Interpreter
+The byte-code files end with the `.elc` extension. You can compile a `.el` *source* file with:
+
+```
+M-x byte-compile-file RET filename.elc RET
+```
+
+`.elc` files can be loaded in the same way as `.el` files with `load-file`.
+
+> Generally, you'd want to keep both the .el (so you can make future changes) and the .elc (so you get a performance gain) files on hand. But we're also talking about scripting in this class, and with the sizes of our scripts, this compiled/uncompiled speed difference is not noticeable (so bothering to make a .elc file in the first place is.. questionable. But it's good to know its purpose and that it's how Lisp works under the hood). **- Nik Brandt (Piazza)**
+
+
+## The Emacs Interpreter
 
 Is a *single-threaded interpreter*. There is only one instruction pointer (e.g. `%rip` on x86-64) at all times.
 
@@ -114,6 +142,9 @@ There's also a byte-code interpreter, which has some byte-code instruction point
 unsigned char *bcip;
 ```
 
+
+## Customizing Key Binds
+
 ```lisp
 (global-set-key "@" "abcxyz")
 ; Now typing "@" is automatically replaced with "abcxyz"
@@ -123,11 +154,11 @@ unsigned char *bcip;
 ; Now typing "@" automatically shows cursor position in minibuffer
 ```
 
-This could be a security hazard, because you can also include control characters. Emacs provides an easy way to escape control characters in strings:
+This could be a security hazard, because you can also include control characters. Emacs does provide an easy way to write control characters as strings:
 
 ```lisp
-"\C-k"
-; "^K"
+"\C-k" ; C-j
+"^K"
 ```
 
 Emacs however checks if you attempt to recurse like:
@@ -138,45 +169,36 @@ Emacs however checks if you attempt to recurse like:
 ; -eval-depth’
 ```
 
-## Python
 
-More of a **general purpose programming language** - designed for you to *write* an application of your own. It was originally designed to teach high school students.
+# Python
 
-### Why Python?
+A **general purpose programming language** - designed for you to *write* an application of your own. It was originally designed to teach high school students.
 
-- CONS: Slow, memory hog.
-- PROS: Easier to write (development cost vs. runtime cost). A lot of libraries are also written in C/C++ code for a performance bonus, made possible by **native method interfaces**.
 
-> Human time is much more valuable than computer time.
+## Why Python?
 
-Prevalence in machine learning. Right place, right time: happened to be a reasonable scripting language for the job.
+- **CONS:** Slow, memory hog.
+- **PROS:** Easier to write (development cost vs. runtime cost). A lot of libraries are also written in C/C++ code for a performance bonus, made possible by **native method interfaces**.
 
-As a scripting language, it's still one of the leading in performance.
+Scripting languages like Python demonstrate an alternate balance between **development cost** and **runtime cost**. Often times, human time is much more valuable than computer time.
 
-> There's always going to be a time where you're the blind person next to the elephant. The goal of software construction is to make you a better blind person.
+Prevalent in machine learning, although this feat is probably due to being at the right place at the right time. Python happened to be a reasonable scripting language for the job when the field was emerging in popularity.
 
-### Python Internals
+> There's always going to be a time where you're the blind person next to the elephant. The goal of software construction is to make you a better blind person. **- Dr. Eggert**
 
-Python is **object-oriented**. Historically, it didn't actually start out that way. Every value is an object.
 
-*Every value is an object.* Every object has:
+## Python Internals
+
+Python is **object-oriented**. Historically, it didn't actually start out that way. It started with functions but no classes. When classes were introduced, they implemented *methods* as functions that explicitly take the `self` first argument, which is similar to the invisible behavior in C++ OOP.
+
+Anyway, every value is an object. Every object has:
+
 - Identity - *cannot be changed*
 - Type - *cannot be changed*
-- Value - *can be changed, but only if object is **mutable***
+- Value - *can be changed, but only if the object is **mutable**
 
-### Python vs. Shell vs. Emacs Scripting
 
-Lisp is an ASL for Emacs, like an extension language. It uses existing code, *Emacs primitives*.
-
-Shell uses existing programs.
-
-Python was designed to be a *general-purpose programming language*, so there are no "primitives" you bring together - you just write in the language altogether to program from scratch. However, it also converges to the same phenomenon where programmers glue together existing modules like PyTorch and SciPy.
-
-What makes a language a scripting language is one that supports this *kind* of software construction.
-
-> The goal of a **scripting language** is you don't code from scratch. You glue together other people's code. You provide the cement, and the other people provide the bricks.
-
-### Python Typing
+### Typing
 
 In old Python, `int` used to have fixed size, so there was the distinction between integers and longs.
 
@@ -186,7 +208,7 @@ Main *categories* of types:
 - Sequences
 - Callables
 
-Underlying `list` allocation stuff:
+Underlying `list` allocation mechanism:
 
 - Probably uses cache size to determine starting size
 - After that, reallocation uses geometric resizing (approximately nine-eights according to [mCoding](https://www.youtube.com/watch?v=rdlQzhP71pQ))
@@ -201,36 +223,44 @@ Visualization: image that the list length is doubled for every allocation, which
 
 The total cost is $\frac{1}{2}*2 + \frac{1}{4}*2 + \frac{1}{8}*3 + ...$, which converges to 2, which is $O(1)$.
 
-There's a school of thought that teaches to use tuples over lists when possible because the former are *safer*.
+**The Buffer Type**
 
-### The Buffer Type
+*(Only available in Python 2)*
 
 Like multiple strings. When you're done working with it, you can convert it to a string with `str(x)`.
 
-*Only available in Python 2, I think.*
 
-Historical Note:
+## Python vs. Shell vs. Emacs Scripting
 
-Python was not always object-oriented; it started with functions but no classes. When classes were introduced, they implemented *methods* as functions that explicitly take the `self` first argument, which is similar to the invisible behavior in C++ OOP.
+Lisp is an ASL for Emacs, like an extension language. It uses existing code, *Emacs primitives*.
 
-# Discussion
+Shell uses existing programs.
 
-## SASS
+Python was designed to be a *general-purpose programming language*, so there are no "primitives" you bring together - you just write in the language altogether to program from scratch. However, it also converges to the same phenomenon where programmers glue together existing modules like PyTorch and SciPy.
 
-A stylesheet language that's compiled into CSS. Allows usage of variables, nested rules, mixins (styles that can be reused), functions, etc.
+What makes a language a scripting language is one that supports this pattern of software construction of building applications from existing code.
 
-## Regular Expressions
+> The goal of a **scripting language** is you don't code from scratch. You glue together other people's code. You provide the cement, and the other people provide the bricks. **- Dr. Eggert**
 
-- grep vs. egrep (`egrep` or `grep -E`)
-- Anchors `^$`
-- Quantifiers `*?` and `+{}` (extended)
-- Sets, ranges, negation `[^a-z]`
-- Groups `(lol|okay)`
 
-## Common Use Cases in Web Apps
+# Assorted Discussion Notes
+
+**SASS** is a stylesheet language that's compiled into CSS. It extends CSS with familiar programmatic features like variables, nested rules, mixins (styles that can be reused), functions, etc.
+
+**Regular expressions** are often used in web apps for:
 
 - Validating phone numbers
 - Validating emails
-- Extracting such information
+- Extracting or processing such information
 
-So apparently in *extended* regular expressions, you can use the OR `|` operator outside of a group `()`.
+*Apparently* in EREs, you can use the OR `|` operator outside of a group `()`:
+
+```
+hello|there
+```
+
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });
+</script>
