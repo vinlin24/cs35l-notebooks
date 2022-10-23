@@ -27,8 +27,8 @@
     - [HTTP (HyperText Transfer Protocol)](#http-hypertext-transfer-protocol)
     - [`telnet` Aside](#telnet-aside)
     - [Variants of HTTP](#variants-of-http)
-- [Data Languages](#data-languages)
-  - [SGML (Standard General Markup Language)](#sgml-standard-general-markup-language)
+  - [Data Languages](#data-languages)
+    - [SGML (Standard General Markup Language)](#sgml-standard-general-markup-language)
 - [Discussion Notes: Midterm Review](#discussion-notes-midterm-review)
   - [Glob (Wildcard) Pattern Matching](#glob-wildcard-pattern-matching)
   - [File Permissions](#file-permissions)
@@ -427,12 +427,12 @@ Not released yet.
 ---
 
 
-# Data Languages
+## Data Languages
 
 HTML is an example of a data language.
 
 
-## SGML (Standard General Markup Language)
+### SGML (Standard General Markup Language)
 
 Markup language for documents (1980s).
 
