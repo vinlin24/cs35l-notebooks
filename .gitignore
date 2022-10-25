@@ -7,3 +7,6 @@
 
 # Probably shouldn't make this public
 GRADES.md
+
+# Exported documents
+dist/
