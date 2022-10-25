@@ -14,7 +14,7 @@
   - [Competing Style Sources](#competing-style-sources)
 - [Browsers](#browsers)
   - [Browser Rendering Pipeline](#browser-rendering-pipeline)
-  - [Preloading](#preloading)
+  - [Rendering Right Away](#rendering-right-away)
   - [Optimization Techniques](#optimization-techniques)
 - [Data Interchange Formats](#data-interchange-formats)
   - [JSON (JavaScript Object Notation)](#json-javascript-object-notation)
@@ -231,7 +231,7 @@ The browser will:
 By default, this is very slow, so browser writers employ various techniques to make rendering as fast as possible.
 
 
-## Preloading
+## Rendering Right Away
 
 One solution is to make the browser start rendering before having complete information about the webpage.
 
