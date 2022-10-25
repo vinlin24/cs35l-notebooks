@@ -33,6 +33,7 @@
 
 # Software Construction
 
+
 ## Concerns and Objectives
 
 **Software Engineering Concerns**
@@ -69,6 +70,7 @@
 - Be understandable to users
 
 ---
+
 **Persistent** vs. **nonvolatile**: persistent variables live on the drive. Nonvolatile variables live in RAM.
 
 ---
@@ -81,7 +83,7 @@
 
 **Don't write a big program intended to solve all your problems.**
 
-Instead, write your application using a collection of tools, each of them relatively simple, each simple and tailored to solve one class of problems really well.
+Instead, write your application using a collection of tools, each of them relatively simple, and each tailored to solve one class of problems really well.
 
 Languages like JavaScript fall under this category because you build programs out of smaller modules. JS itself is definitely not a little language, but instead, users put together small parts of it that individually do its job well to ultimately construct a more complex program.
 
@@ -96,9 +98,8 @@ Basically the opposite of C++, a huge language that attempts to solve all classe
 
 **Examples:** `sh`, `sed`, and `grep` are specialized programs that all come with their own little languages.
 
-**Downside:** for each tool you want to become an expert in, you have to learn a new language.
-
-**Upside:** each language is very simple and does its job well.
+- **Downside:** for each tool you want to become an expert in, you have to learn a new language.
+- **Upside:** each language is very simple and does its job well.
 
 
 # Operating Systems
@@ -126,6 +127,7 @@ sh and Emacs and any of their independent instances are themselves **application
 **Introspection** - When a program looks at itself ("when we use tools to find out more about our tools"). Knowing how to perform introspection is a portable, universal skill that lets you explore or relearn something about an unfamiliar program.
 
 ---
+
 Viewing information about the processor currently running:
 ```shell
 less /proc/cpuinfo
@@ -145,13 +147,15 @@ less /proc/cpuinfo
   sudo sh
   ```
 
-Why have multiple users instead of just root? The concept of **minimization of privileges** aka "principle of least privilege". If a program breaks or a user makes a mistake, the damage is limited.
+**Why have multiple users instead of just root?**
+
+The concept of **minimization of privileges** aka "principle of least privilege". If a program breaks or a user makes a mistake, the damage is limited.
 
 ---
 You can kill a program by PID:
 
 ```shell
-kill <PID1> <PID2> ...
+kill PID1 PID2 ...
 ```
 
 ---
@@ -165,7 +169,6 @@ kill <PID1> <PID2> ...
 - Like the task manager: lists processes and their information
 - For a live view, use the `top` program instead
 - By default lists the processes on the local machine, but you can use some useful flags like:
-
   ```shell
   ps -ejH | less
   ```
@@ -253,8 +256,8 @@ ls ~/*html | sort > list_html.txt
 
 ### Shell Syntax Convention
 
-- Normal arguments like `a`.
-- Options `-ejh` which is also equivalent to `-e -j -h` (jamming them together is a thing you can do on Unix.
+- Normal (positional) arguments, like `a`.
+- Options `-ejh` which is also equivalent to `-e -j -h`. Jamming them together is a thing you can do on Unix, but as we know from Assignment 2, this behavior becomes tricky when there are options that take arguments.
 
 
 # Emacs
@@ -267,7 +270,7 @@ Such applications are at the mercy of networking, which are orders of magnitude 
 ## Concept of Buffers
 
 - Emacs makes use of **buffers** to be *fast*. Buffers are just a bunch of text that live in RAM.
-- Emacs (and editors in general) makes a clear distinction between what's *persistent* (files that are saved) and what's not (buffers).
+- Emacs (and editors in general) makes a clear distinction between what's *persistent* and what's not to balance speed and reliability. For work that is rapidly changing like when you're typing a sentence, we have very performant buffers. Only when work is ready to be saved, the application can flush the buffer to the file system in one fell swoop.
 
 **Buffer-related Key Binds:**
 ```
@@ -355,7 +358,7 @@ At any point, you can use `C-L` to vertically center the point if possible. Use 
 
 ### Fixing Mistakes
 
-While still learning, it's important to know these few to get back to familiar territory when something goes wrong:
+It's important to know these few to get back to familiar territory when something goes wrong:
 
 ```
 C-/             Undo the last command (only if text was modified)
@@ -390,7 +393,7 @@ After attempting to use the full name for a command that has a `C-x` shortcut, E
 
 There is a special command that allows you to send a numerical argument to a command:
 ```
-C-u NUM KEY     perform command NUM times
+C-u NUM KEY
 ```
 
 For many commands, this simply repeats the actions, but some commands may have slightly different behavior. For example:
@@ -470,14 +473,16 @@ M-y     cycle the text to yank through kill history
 
 Emacs is a **modeful** editor. That means the current state of Emacs not only includes the contents of the current files being edited but also what way you intend to be using the editor next. A **mode** is like a method of interacting with the editor.
 
-- Upside: more efficient for experts
-- Downside: confusing/tricky for non-experts
+- **Upside:** more efficient for experts
+- **Downside:** confusing/tricky for non-experts
 
 ```
 M-x MODENAME            switch to mode
 ```
 
-`C-h m` brings up a buffer that describes what mode you are in. Being in "editor" mode is called **Fundamental** mode. You can also be in **Shell** mode or **dired** (directory-editing) mode. The mode you are in affects the keys you input. You can see the name of the major mode you are currently in with the **mode bar** just above the minibuffer.
+`C-h m` brings up a buffer that describes what mode you are in. The default "editor" mode is called **Fundamental** mode, and there is also **Text** mode in which navigating among words with certain characters like apostrophes is slightly different.
+
+You can also open a shell subprocess (**Shell** mode) or a view of a directory (**dired**, directory-editing mode). The mode you are in affects the keys you input. You can see the name of the major mode you are currently in with the **mode bar** just above the minibuffer.
 
 ```
 C-x d <dirname> RET     enter dired mode for directory
