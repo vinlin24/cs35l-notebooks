@@ -292,8 +292,8 @@ Like HTML but designed for data.
 ```xml
 <menu id="file" value="file">
   <popup>
-    <menuitem value="New" onClick="CreateDoc()">
-    <menuitem value="click" onClick="CloseDose()">
+    <menuitem value="New" onClick="CreateNewDoc()">
+    <menuitem value="click" onClick="CloseDoc()">
   </popup>
 </menu>
 ```
