@@ -156,19 +156,24 @@ There are two forms of quoting: single (`'`) and double (`"`).
 
 ### Single Quoting
 
-Using single quotes makes the shell treat everything inside the quotes as a *single word*:
+Using single quotes makes the shell treat everything inside the quotes as a *single word*. More importantly, *every* character inside is preserved *literally*. This means that you cannot include the single quote `'` itself because escaping is not possible.
 
+```console
+$ echo 'hello\there\n"general kenobi"'
+hello\there\n"general kenobi"
 ```
-cat '3 o\'clock'
-```
-Notice that you can escape the single quote itself with backslash (`\`), forming an **escape sequence**. Other than that, characters are preserved *literally* inside single quotes.
 
 
 ### Double Quoting
 
-Alternatively you can use *double quotes* to enclose "most any characters". `$` is still special, used to **interpolate** other variables or sub-expressions.
+Alternatively you can use *double quotes* to enclose "most any characters". `$` is still special, used to **interpolate** other variables or sub-expressions. Special characters are also possible with **escape sequences**, like `\"` to represent a double quote mark itself. Interestingly, `\n` does not work the way you would expect.
 
-Quoting can even include newlines, but that's so controversial that it's probably going to be removed in an upcoming POSIX standard release.
+```console
+$ echo "hey there's\n\"general kenobi\""
+hey there's\n"general kenobi"
+```
+
+Quoting can even include newlines itself (RET at the command line), but that's so controversial that it's probably going to be removed in an upcoming POSIX standard release.
 
 
 ## The `grep` Command and Pattern Matching
