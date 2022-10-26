@@ -458,9 +458,18 @@ The structure of the document forms a tree structure: the content inside `<ITALI
 
 Used in file management: `man 7 glob`
 
+The shell will **expand** strings containing these special characters to every string that matches the pattern, separated by whitespaces. For example, `*` in a directory containing files named `file1`, `file2`, and `file3` would expand to:
+
+```console
+$ echo *
+file1 file2 file3
+```
+
+This is done *by the shell* and NOT the programs typically associated with them like `ls`. When you run something like `ls hello/*`, bash first expands the string `hello/*` to `hello/some_file hello/another_file ...` and *then* passes it to `ls`.
+
 - `?` - match one, any character
 - `*` - match any number of characters, including the empty string
-- `{pdf, jpeg}` - match multiple literals
+- `{pdf,jpeg}` - match multiple literals
 - `[]` - character set that supports *ranges*, similar to regex
 - `[!]` - complement of a character set if `!` is the first character
 - `\` - escape character
@@ -559,7 +568,7 @@ fi
 ```sh
 #!/bin/sh
 atom='[a-zA-Z0-9]+'         # at least 1 alphanumeric character
-string='\\"([^"\]|\\.)*\\"' # what the fuck
+string='\\"([^"\]|\\.)*\\"' # \"(something)\", where (something) is . OR neither " or \
 word="($atom|$string)"
 words="$word(\\.$word)*"
 grep -E "$words" | grep ' '
