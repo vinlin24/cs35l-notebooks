@@ -19,6 +19,28 @@
 - [Data Interchange Formats](#data-interchange-formats)
   - [JSON (JavaScript Object Notation)](#json-javascript-object-notation)
   - [XML (Extensible Markup Language)](#xml-extensible-markup-language)
+- [Discussion Notes](#discussion-notes)
+  - [Git](#git)
+    - [Repositories](#repositories)
+    - [Commits and Staging](#commits-and-staging)
+    - [Status and Logging](#status-and-logging)
+    - [Viewing Differences](#viewing-differences)
+    - [Branches](#branches)
+    - [Merging](#merging)
+    - [Merge Conflicts](#merge-conflicts)
+    - [Patching and Cherry-Picking](#patching-and-cherry-picking)
+    - [Collaborative Best Practices](#collaborative-best-practices)
+    - [Configuring Git](#configuring-git)
+  - [C Programming](#c-programming)
+    - [Syntax Overview](#syntax-overview)
+    - [Pointers](#pointers)
+    - [IO](#io)
+    - [Header and Source Files](#header-and-source-files)
+  - [Makefile](#makefile)
+    - [Implicit Rules](#implicit-rules)
+    - [Phony Targets](#phony-targets)
+    - [Running the Makefile](#running-the-makefile)
+  - [Tips for Assignment 4](#tips-for-assignment-4)
 
 ---
 
@@ -303,3 +325,375 @@ Like HTML but designed for data.
 Different network protocols can use different formats.
 
 In general, JSON tends to be more popular. With JavaScript code, it's easier to parse strings in JSON fields than in XML attributes because JSON by design is already valid JavaScript. JSON is also slightly smaller in terms of file sizes.
+
+
+# Discussion Notes
+
+
+## Git
+
+
+### Repositories
+
+1. Create one remotely on a server (like GitHub) and clone it
+
+  ```shell
+  git clone URL
+  ```
+
+2. Create one locally and then link it to a remote
+
+  ```shell
+  git init
+  git remote add NAME URL
+  ```
+
+### Commits and Staging
+
+**Commits** are like checkpoints for your code, snapshots that are saved in the repository.
+
+You know how it goes:
+
+```shell
+git add PATHSPEC
+git commit -m MESSAGE
+git push
+```
+
+There is an intermediate phase between modified/unmodified files and commit called the **staging area**. You can add files to this phase with `git add`
+
+**Unstaging** a file:
+
+```shell
+git restore ---staged FILE
+```
+
+Syncing your local repository with the remote one:
+
+```shell
+git fetch
+git pull  # effectively fetching + merging
+```
+
+
+### Status and Logging
+
+Checking the status of your repository:
+
+```shell
+git status
+```
+
+Each file can be in the following states:
+
+- Staged
+- Not staged but modified
+- Untracked
+
+
+In general, files go through these states:
+
+```
+Untracked Modified Modified Staged
+--+----------+---------+--------+
+  |-----------(add)------------>|
+  |          |-(edit)->|        |
+  |<(remove)-|         |(stage)>|
+  |          | <-----(commit)---|
+```
+
+**Viewing commit history:**
+
+```shell
+git log --stat
+git log --oneline
+git log --pretty=format:"%h - %an, %ar: %s"
+git log --oneline --decorate --graph --all
+
+# Look for differences that change the occurrences of specified string
+git log -S<string>
+```
+
+
+### Viewing Differences
+
+Viewing the changes in your repository for files that you have modified but not yet staged:
+
+```shell
+# git diff [REF]
+git diff
+git diff HEAD
+
+# There's also (and these are equivalent):
+git diff --staged
+git diff --cached
+```
+
+Viewing difference between two commits:
+
+```shell
+# Typically with SHAs of the specific commits you want
+git diff REF..REF
+
+# But you can also abbreviate the hashes:
+git diff 5c6cb30..53bf6bd
+git diff 5c6c..54bf
+
+# But this has a limit. This fails:
+git diff 5c6..53b
+
+# As usual you can use the HEAD ref to reference commits relative to
+# the last commit:
+git diff HEAD~..HEAD
+git diff HEAD~4..HEAD
+git diff HEAD^..HEAD
+```
+
+The special syntax around the `HEAD` ref:
+
+- The tilde `~` denotes ancestry. `HEAD~`/`HEAD~1` is `HEAD`'s parent, `HEAD~2` is the the grandparent, stc.
+- The caret `^` denotes the first parent of the tip of the current branch. TL;DR it helps resolve multiple ancestry, which is not something I will be bothering with any time soon.
+
+
+### Branches
+
+Allow you to develop different features in parallel. "Branches" are pointer nodes to different parts of the commit tree. Switching between branches is equivalent to moving the special pointer, `HEAD` (kind of like a "you are here"), to point to these branch nodes.
+
+```shell
+git branch [-a] [-v]  # listing (all) branches (verbosely)
+git branch [-D | --delete] BRANCH
+```
+
+**Switching between branches:**
+
+```shell
+git checkout REF
+git checkout -b NAME  # create and switch
+# create if doesn't exist, else reset existing, then switch
+git checkout -B NAME
+```
+
+
+### Merging
+
+```shell
+git merge REF
+git merge --squash
+```
+
+
+There are several merging techniques:
+
+**(1) Fast-Forward**
+
+This is the default behavior. Move the branch head up to the merge commit of the merging branch.
+
+
+**(2) Three-way merge**
+
+Necessary when the branch to merge to has changed.
+
+Git will find the *common ancestor* of the two branch heads and then create a new commit.
+
+---
+
+A more advanced way of managing your commit history:
+
+```shell
+git rebase  # append the new commits to the leaf node
+```
+
+---
+
+Two commits can share more than one **common ancestor**. There's also a command called `git merge-base` that makes this happen.
+
+
+### Merge Conflicts
+
+**Merge conflicts** prompt you to edit the conflicted files. You can also use a special tool like the Merge Editor in VS Code to use a GUI to more intuitively select which version (*current* vs. *incoming*) to retain.
+
+Without a GUI, conflicts in their raw form actually look like:
+
+```
+this text doesn't have any conflict
+<<<<<<< HEAD
+conflicting text already in current file
+=======
+conflicting text from file being merged
+>>>>>>> SHA-of-the-incoming-commit
+```
+
+Git actually modifies the content of the conflicting file with this pattern, conflicting text separated by special barriers. The one with `<` brackets shows the **CURRENT** content, and the one with `>` brackets shows the **INCOMING** content. To resolve the conflict, you need to edit this block to only include one version of this content ("accept current change" or "accept incoming change"). You can also accept both changes. You could also leave the file in this conflicted state with the barriers, but that's stupid practice because if you do this on a source file, it will almost definitely be a syntax error.
+
+**Resolving conflicts:** usually you would edit the conflicting files in your editor of choice and regularly check for further instructions with `git status`. You can just conclude the merge with:
+
+```shell
+git merge --continue  # but not recommended
+```
+
+### Patching and Cherry-Picking
+
+Create a patch file(s) for a commit
+
+```shell
+git format-patch [-o DIR] REF
+```
+
+```shell
+git am FILES...
+git apply FILES...
+git cherry-pick REF
+```
+
+
+### Collaborative Best Practices
+
+**Branches:**
+
+- master or main: stable branch
+- develop: for development
+- each team member may create ther branches for individual features/bugs
+
+Protect the master branch. DON'T force-push; it could destroy the commit history. Don't be that guy.
+
+On GitHub, use **pull requests** to merge changes into other branches. Pull requests may undergo a **review**. You can also use **issues** to assign bugs or features to team members.
+
+Avoid merging temporary files or debugging code.
+
+
+### Configuring Git
+
+You can use:
+
+```shell
+git config --global KEY VALUE
+```
+
+This writes to the `~/.gitconfig` file, which you could also edit manually with your editor of choice.
+
+**Setting up Git on New Machines:**
+
+```shell
+git config --global user.name "Vincent Lin"
+git config --global user.email vinlin24@outlook.com
+```
+
+User name is not that important. It's mostly used for identifying contributors at a glance with things like `git log` I assume. The email however is critical because remote services like GitHub use that to identify the account of the contributor.
+
+
+## C Programming
+
+### Syntax Overview
+
+You know how it goes:
+
+- `#include` for header files.
+- `int main() {}` for the main function.
+- A variable is declared starting with its type.
+- Use `{}` to contain the body of functions/loops/if.
+- The `bool` data type is not actually built in. You have to `#include <stdbool.h>`, which really just defines `typedef unsigned char bool`.
+
+
+### Pointers
+
+You are forced to use **pointers** whether you like them or not!
+
+- `&name` makes a pointer.
+- `*ptr` dereferences it.
+
+You can use `malloc`, defined under `<stdlib.h>`, to dynamically allocate memory at runtime.
+
+You can treat pointers and arrays interchangeably in many sitations... if you know what you're doing.
+
+
+### IO
+
+<!-- TODO -->
+
+
+### Header and Source Files
+
+**Header files** (*.h) contain declarations and macro definitions.
+
+**Source files** (*c) implementations of the declared names.
+
+
+## Makefile
+
+When you want to automate tasks like the tedious compilation statements:
+
+```shell
+gcc -o foo foo.c
+```
+
+A Makefile consists of **rules**, organized into blocks like so:
+
+```makefile
+target1: prerequisites...
+  recipe
+
+target2: prerequisites...
+  recipe
+```
+
+The **target** is the file you want to produce. The **prerequisites** are the rules required for this rule. The **recipe** is the sequence of shell commands you run to produce your target file.
+
+
+You can define variables with a similar syntax to shell scripting:
+
+```makefile
+CC = gcc
+CFLAGS = -O3
+
+# Then you can reference with $(CC) or ${CC}
+```
+
+### Implicit Rules
+
+If you don't define a rule for a prerequisite, an implicit rule may be used in its place. For example, `foo.o` is included as a prerequisite to the `foo` target, there is no explicit `foo.o` rule defined elsewhere in the file. Thus, its rule is written for it.
+
+> Compiling C programs
+>
+> 'n.o' is made automatically from 'n.c' with a command of the form `$(CC) -c $(CPPFLAGS) $(CFLAGS)`.
+
+```makefile
+foo: foo.o bar.o
+  cc -o foo foo.o bar.o ${CFLAGS) $(LDFLAGS)
+```
+
+
+### Phony Targets
+
+Using not the name of a file, but an action.
+
+Example:
+
+```makefile
+clean:
+  rm -f *.o *.$(TAREXT) randall
+```
+
+### Running the Makefile
+
+The command is `make`.
+
+Specifying a target:
+
+```shell
+make TARGET
+make clean  # example
+```
+
+
+## Tips for Assignment 4
+
+1. `git blame` and how to use it on GitHub
+2. Tags
+3. The shell command `diff` and how to **patch**
+
+Helpful commands (if opting to use shell scripting instead of making your life easier with Python):
+
+1. `awk -F`
+2. `$1`, `$2` in shell scripting
+3. `git stash`
+4. Hot to do `git stash` before using `git` (by `diff` and `patch`)
