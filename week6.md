@@ -509,3 +509,62 @@ B (Incoming Change)
 ```
 
 The user then edits these lines in their editor of choice and then runs `git add` to resolve the conflict.
+
+
+# Discussion Notes: C Programming and Makefiles
+
+
+## Compiling/Linking with GCC
+
+Separating the compilation from the linking:
+
+```shell
+# First compile without linking
+gcc main.c def.h -c -o main.o
+gcc def.c def.h -c o def.o
+# Link the two objects into the target executable
+gcc def.o main.o -o main
+```
+
+While you could do this on one line like:
+
+```shell
+gcc main.c def.c -o main
+```
+
+The former has the benefit that when defined in a Makefile, only the files that are updated are recompiled. This makes the process more efficient as we are not going through the entire compilation sequence for every file on every change.
+
+
+## Makefile Basics
+
+A **phony target** is a rule that has NO output file. The most common example is the `clean` pattern:
+
+```makefile
+clean:
+  rm *.o
+```
+
+Then use .PHONY to declare a phony target:
+
+```makefile
+.PHONY: clean
+```
+
+
+## Assignment 5: Refactoring
+
+We want to split up a long file `randall.c` into a more organized collection:
+
+```
+randall.c
+  rand64-hw.h
+  rand64-sw.h
+  output.h
+  options.h
+```
+
+Benefits of refactoring:
+
+- Readability and modularity
+- Easier to debug
+- Reduces compilation time (parallel compilation of multiple files)

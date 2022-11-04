@@ -629,11 +629,11 @@ gcc -o foo foo.c
 A Makefile consists of **rules**, organized into blocks like so:
 
 ```makefile
-target1: prerequisites...
-  recipe
+target1: prereq1 prereq2 ...
+  recipe1
 
-target2: prerequisites...
-  recipe
+target2: prereq1 prereq2 ...
+  recipe2
 ```
 
 The **target** is the file you want to produce. The **prerequisites** are the rules required for this rule. The **recipe** is the sequence of shell commands you run to produce your target file.
@@ -652,13 +652,15 @@ CFLAGS = -O3
 
 If you don't define a rule for a prerequisite, an implicit rule may be used in its place. For example, `foo.o` is included as a prerequisite to the `foo` target, there is no explicit `foo.o` rule defined elsewhere in the file. Thus, its rule is written for it.
 
+From the GNU documentation:
+
 > Compiling C programs
 >
 > 'n.o' is made automatically from 'n.c' with a command of the form `$(CC) -c $(CPPFLAGS) $(CFLAGS)`.
 
 ```makefile
 foo: foo.o bar.o
-  cc -o foo foo.o bar.o ${CFLAGS) $(LDFLAGS)
+  cc -o foo foo.o bar.o $(CFLAGS) $(LDFLAGS)
 ```
 
 
