@@ -537,6 +537,44 @@ The former has the benefit that when defined in a Makefile, only the files that 
 
 ## Makefile Basics
 
+- A build tool designed for developers
+- A layer above shell (should use the same shell as the one used to run `make`)
+- Handle incremental build and enable parallelization
+
+Special variables within a rule: `$@` is the target of the rule and `$^` is the prerequisites of the rule. For example:
+
+```makefile
+foo: foo1.o foo2.o foo3.o
+  g++ $^ -o $@
+```
+
+Adding a `-` before a command means to keep going even if that command fails. This can be useful in cleaning commands, like:
+
+```makefile
+distclean: distclean-recursive
+  -rm -f $(am_CONFIG_DISTCLEANFILES)
+  -rm -f Makefile
+```
+
+
+### Macros
+
+```makefile
+XYZ = foo1.o foo2.o foo3.o  # XYZ is a macro
+foo: XYZ
+  g++ XYZ -o foo
+```
+
+Commonly you'll see people define `CC` for the compiler command (`gcc`) and `CFLAGS` for the compiler options:
+
+```makefile
+CC = gcc
+CFLAGS = -O2 -g3 -Wall -Wextra
+```
+
+
+### Phony Targets
+
 A **phony target** is a rule that has NO output file. The most common example is the `clean` pattern:
 
 ```makefile
@@ -544,7 +582,7 @@ clean:
   rm *.o
 ```
 
-Then use .PHONY to declare a phony target:
+Then use `.PHONY` to declare a phony target:
 
 ```makefile
 .PHONY: clean
@@ -568,3 +606,34 @@ Benefits of refactoring:
 - Readability and modularity
 - Easier to debug
 - Reduces compilation time (parallel compilation of multiple files)
+
+
+## System Calls
+
+> A way for programs to interact with the operating system.
+
+The concept of an **operating system** was invented to facilitate interaction between programs and the hardware. Without it, it would be much easier for programs to maliciously attack hardware or cause I/O conflicts with read/write operations.
+
+Programs can make **system calls** *to* the operating system, and the operating system will then interact with the hardware in a well-defined way and report back with any output.
+
+
+### Categories of System Calls
+
+1. Process control `fork`
+2. File management `open`/`close` a file, `read`/`write`
+3. Device management
+4. information maintenance
+5. Communication
+6. Protection
+
+
+### The `write()` System Call
+
+```c
+#include <unistd.h>
+ssize_t write(int fd, const void *buf, size_t count);
+```
+
+- `fd` stands for file descriptor, which could be stdout or stderr.
+- `*buf` stands for buffer. This contains any data in it.
+- `count` is the number of bytes to be written to a file descriptor from the buffer.
