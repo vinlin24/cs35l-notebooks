@@ -242,3 +242,270 @@ git clean -x
 A special file inside the repository containing file patterns that Git should not track. The file pattern syntax is similar to the familiar **globbing pattern** as the shell.
 
 .gitignore is like a configuration file that instructs how users run Git. It's under Git's control i.e. it'll show up in `git ls-files`.
+
+**What files should be ignored?**
+
+Files that we do not want to put under version control. Obvious candidates include:
+
+- Temporary files, `\#*`
+- Machine-dependent code, `*.o`
+- Imported files (from other packages)
+- Authentication information (passwords/keys/etc.)
+- Hashes of passwords? If it's intended for authentication, this would be just as bad as raw passwords. Enables **rainbow attacks** on the passwords where attackers try to crack the checksum algorithm.
+
+
+### The .git/config File
+
+You can view the current configuration of the Git program with:
+
+```shell
+git config -l
+```
+
+This outputs the information stored in the editable `.git/config` file in the current repository. Cloning a repository also copies the configuration file.
+
+**CAUTION:** One notable problem (which is standard across any software) is that if there is a syntax error in the configuration file, Git stops working altogether.
+
+`.git/config` is NOT under version control because it determines how Git itself functions and because it would introduce the problem of recursion. `.gitignore` IS under version control because it's like a message from the developer and contains information about how to manage the project actually being version controlled. You also don't need to worry about what's in `.gitignore` to use Git itself.
+
+
+### The ~/.gitconfig File
+
+After resolving the configuration in the current repository, Git then falls back to this configuration file. Contains *global* configuration information for Git, like username and email.
+
+---
+
+`git show` is a generic command that shows a commit "object". Commit objects live in the database and are really just the recorded changes from the previous commit along with some metadata.
+
+The ubiquitous `--pretty` option can be used here too for more verbose output:
+
+```shell
+git show --pretty=fuller
+```
+
+
+## Working with Remotes
+
+A **remote**, named `origin` by convention, is the **upstream** repository from which the local repository was cloned or set to track.
+
+The concept of upstream/downstream comes from the fact that clones may be sourced from repositories that are themselves sourced from another branch, forming a chain of origin - a "stream".
+
+
+### Fetching
+
+This consults the remote server for upstream changes and syncs the clone's "opinion" fo what upstream looks like:
+
+```shell
+git fetch
+```
+
+If it outputs nothing, it means the local clone is up-to-date with the upstream remote. `fetch` does not change the working files nor does it alter any branches.
+
+`fetch` is incremental, only fetching the changes since the last call to fetch.
+
+
+### Pulling
+
+`git pull` is roughly equivalent to a `git fetch` followed by *merging* upstream changes into the current branch. This command is actually rarely ideal on large development projects because more often than not it may not be what you want to do. When it works, `pull` DOES change the working files.
+
+
+## Recovering from Mistakes
+
+
+### If *Before* the Commit
+
+The working file is wrong, but the most recent version saved in the repository is safe.
+
+1. Edit the file `F`
+2. Update the index: `git add F`
+
+
+### If *After* the Commit
+
+The repository now has a bad version of the code in its history.
+
+**Option A:** Commit a new, fixed version. The bad commit would still be recorded in the the old and fixed commit. This would be an honest representation of the development history, but often times this is not wanted.
+
+```
+(old)-->(broken)-->(fixed)
+                      ^
+                     HEAD
+```
+
+> An iron-clad rule in Git is that *you cannot change history*. This is because every commit is uniquely identified by the SHA-1 ID.
+
+**Option B:** However, you can cheat this rule with the `git commit --amend` approach, which creates a new child from the parent commit and moves `HEAD` to it:
+
+```
+(old)-->(broken)
+  |
+  +---->(fixed)
+           ^
+          HEAD
+```
+
+This is very risky as an upstream repository. If someone happens to `fetch` when `HEAD` still points to the broken commit, then when they `fetch` with the new altered tree, Git and the users will get confused.
+
+**Option C:** You can change the state of the repository back to another version.
+
+Reverting to the previous commit.
+
+```shell
+git reset HEAD^
+```
+
+This would fail if there are changes in the working files, in which case, you can throw the changes away and revert anyway with:
+
+```shell
+git reset --hard HEAD^
+```
+
+
+## Branching
+
+A single commit can have multiple children.
+
+A **branch** in Git is like a lightweight, movable *name* for a commit that is the at the tip of a line of maintenance.
+
+> At the end of the day, Git is all about pointers! :D
+
+One branch, the "main"/"master" branch is typically reserved for *mainline development*. There may be other branches for things like *maintenance development*, *old releases*, *hot fixes*, etc.
+
+
+### Patching Across Branches
+
+Suppose a security hole was discovered in an old commit, which multiple branches share as an ancestor. You can fix the bug on the mainline branch, but that doesn't solve it for other branches.
+
+The solution is to **cherry-pick fixes**. You manually apply the same Δ to all versions that have the same bug.
+
+Suppose there's an alternate branch named `maint`.
+
+```shell
+git add F
+git commit -m "Make an emergency fix"
+
+# Prepare the patch to apply to other branches
+git diff HEAD^! > t.diff
+
+# t.diff is a working file, preserved across checkout
+git checkout maint
+
+# Apply patch to this branch's working files
+patch < t.diff
+git add F
+git commit -m "Make an emergency fix"
+```
+
+The `patch` command is external to diff. It reads the output of the diff file and modifies the old file so that it looks like the new file.
+
+```shell
+diff -u A B > AvsB.diff
+patch < AvsB.diff
+```
+
+This modifies `A` to look like `B`.
+
+Attempting to apply a patch to a since edited version of a file may fail to work. It may still work if the changes to the original files does not *collide* with what the patch is attempting to change.
+
+`diff` operates on **hunks**, batches of lines that represent a change. Patching goes through each hunk and applies the change. If the hunks do not match, then it will reject the change into an `rej` file, prompting you to fix it by hand.
+
+**NOTE:** The output of `diff` is NOT deterministic. There is no requirement of the algorithm to modify a file in a specific way as long as the final copy is correct.
+
+
+### Manipulating Branches
+
+Creating a branch off a commit, defaulting to `HEAD`, and checking out to it:
+
+```
+git checkout -b NAME [REF=HEAD]
+```
+
+**EXAMPLE:** creating and checking out to a new branch named `newbr` off of the grandparent of the current `HEAD`:
+
+```shell
+git checkout -b newbr HEAD^^
+```
+
+Branch names must be unique. Git won't let you create or rename a branch to an existing name.
+
+Because branches are just names, *deleting* a branch does not modify any commits, just a reference that used to point to one.
+
+```
+git branch [--delete | -d] NAME
+```
+
+You can try to do something weird like:
+
+```shell
+git branch -d master
+```
+
+The objects would still be there, but Git will lose track of where they are, so Git would warns you. You can *forcefully* delete a branch despite Git's warnings with:
+
+```
+git branch -D NAME
+```
+
+*Renaming* a specific branch, defaulting to the current branch:
+
+```
+git branch -m NEW_NAME [OLD_NAME=HEAD]
+```
+
+
+### Detached HEAD State
+
+You can checkout to an arbitrary commit by ID/tag name:
+
+```
+git checkout REF
+```
+
+But this puts you in **detached HEAD state**, which is when `HEAD` is not pointing to any branch tip. Git warns you that you can look around but not make further changes. You cannot commit in this state because Git does not know how.
+
+
+## Merging
+
+**Merging** occurs when multiple lines of development come together as one. More technically, it is when you create a commit from two or more parents commits, which may or may not be named branch tips.
+
+Suppose:
+
+```
+()-->(A)-->()-->()-->(Y)-->(Merged)
+      |                       |
+      +----->()---->(X)-------+
+```
+
+Git finds the common ancestor `A`, of the parent commits `X` and `Y`. Then, it runs computation on all 3. It is as if:
+
+```shell
+diff3 X A Y > combined.diff  # "3-way diff"
+```
+
+This file describes changes to change the common ancestor `A` to *either* `X` or `Y`.
+
+The command to merge a branch named `BRANCH_NAME` into the current branch:
+
+```
+git merge BRANCH_NAME
+```
+
+What this does is:
+
+1. Compute 3-way merges
+2. Replace working files accordingly
+
+
+### Merge Conflicts
+
+More often than not, the changes *collide*, resulting in a **merge conflict**. If there's a collision, Git modifies the affected files with a "replica" of the collision with the special notation:
+
+```
+<<<<<<<
+A (Current Change)
+=======
+B (Incoming Change)
+>>>>>>>
+```
+
+The user then edits these lines in their editor of choice and then runs `git add` to resolve the conflict.
