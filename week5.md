@@ -221,6 +221,7 @@ CSS is a compromise between the presentational layer of HTML and the interactive
 
 CSS statements are put into DOM style elements. The styles are *cascading*, meaning by default they are inherited by subtrees.
 
+
 ## Competing Style Sources
 
 There are competing sources for putting styles into the DOM tree:
