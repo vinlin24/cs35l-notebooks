@@ -637,3 +637,5 @@ ssize_t write(int fd, const void *buf, size_t count);
 - `fd` stands for file descriptor, which could be stdout or stderr.
 - `*buf` stands for buffer. This contains any data in it.
 - `count` is the number of bytes to be written to a file descriptor from the buffer.
+
+<!-- TODO: change graph arrows to arc from child to parent -->
