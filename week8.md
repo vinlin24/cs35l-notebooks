@@ -1,3 +1,5 @@
+<!-- TODO: These notes aren't organized yet. -->
+
 # Low Level Debugging (Continued)
 
 
@@ -295,7 +297,7 @@ Chromium, etc.
 > The compiler should be your servant, not your master. If you get warnings, look at what they're actually saying. If they're false positive, shut them off. - Dr. Eggert
 
 
-# Debugging
+# Debugging Strategies
 
 1. You're better off NOT debugging. Often times projects are stuck in **debugging hell**, spending more time debugging than actually developing. Debugging is an inefficient way of finding and fixing bugs. If you're spending a lot of time debugging, you should probably change your software construction approach such that you don't get so many bugs. *Be proactive* e.g. use static checking!
 2. Write test cases. **Test-driven development (TDD)** is a theory of development that states that test cases are higher priority than code; one should write test cases first, the idea being you can use the test cases to debug the specifications of the code before actually writing the code.
@@ -327,3 +329,271 @@ Chromium, etc.
 
 > **TDD Aside:** If you write some test cases, and your program passes all the test cases, then you screwed up because you haven't found the bug you wanted to find. When you're writing test cases, you're trying to be imperfect. You're trying to think "how do I make this program crash?" Often times, tests are written by another class of developers because the self-interest of coders causes them to write bad test cases. - Dr. Eggert
 
+
+# Debugging Tools
+
+Some examples are **GDB**, the GNU debugger, and **Valgrind**.
+
+**strace** is a command that outputs the system calls a program uses, as if there were many `printf` logging calls in the source code.
+
+```shell
+#      vvvvvvvvvvvvvvvvvvv any shell command
+strace cat /etc/os-release
+```
+
+Other commands we've seen before like `ps` and `top` are also *DevOps tools*. System administrators use this to monitor server activity, but they can also be useful for debugging.
+
+
+## How Debuggers Work
+
+GDB is actually a separate process from the process being debugged. It uses special system calls to exert some control over the process being debugged. Model:
+
+```
+(gdb process)--+
+               | special system calls
+               v
+        (your process)
+```
+
+These special system calls include, at any point in execution:
+
+- Starting/stopping/continuing
+- Accessing memory
+- Accessing registers
+
+These do have security restrictions and cannot be used arbitrarily. These restrictions depend on the OS, but typically the rule is that the debugger must control a process with *same user ID*. Other OS may have a more restrictive rule, stating it can only debug a *child process*.
+
+
+## Getting Started with Debugging
+
+You can use a `-g` flag to specify debug info level for a C program:
+
+```shell
+gcc -g3 program.c
+```
+
+This conflicts with optimization because code that is optimized by the compiler tends to become harder to understand.
+
+```shell
+gcc -g3 -O2 program.c
+```
+
+This typically results in **inlining**, where calls to functions can be optimized away by substituting their body into places where it was called. The produced machine code would then be functionally equivalent but have lost the information that a function was even called.
+
+What the `-g` flag does is bloat the resulting object and executable files with debugging tables. This data isn't visible when the program runs normally, but debuggers will be able to access them.
+
+**ASIDE:** `_FORTIFY_SOURCE` is a standard technique used by GCC to make stack overflows less likely to succeed. For technical reasons, this is incompatible with no optimization i.e. attempting `gcc -O0` will cause a compiler error.
+
+Dropping a program into GDB:
+
+```shell
+#   vvvv program to debug
+gdb diff
+```
+
+
+## GDB Commands
+
+Setting the working directory of the program when it starts up:
+
+```console
+(gdb) set cwd /etc
+```
+
+Setting environment variables for the debugging session:
+
+```console
+(gdb) set env TZ America/New_York
+```
+
+A defense technique against buffer overflow attacks is to have the program run at randomized locations in memory (CS 33). By default, Linux executes programs in an environment with randomized addresses for the stack, heap, C library, etc. and many even the `main()` function.
+
+The downside of this program is that it will run differently every time. This means that if there's a bug that depends on stack addresses for example, then it may appear sometimes and not for others. This makes debugging harder, so by default, this option is already on:
+
+```console
+(gdb) set disable_randomization on
+```
+
+Actually running the program. The arguments you supply after `run` are in shell syntax and forwarded to the executable being debugged:
+
+```console
+(gdb) run -u /etc/os-release - < /dev/null
+```
+
+*Alternatively*, you can make GDB be in charge of another program using the PID of running process, effectively suspending it.
+
+```console
+(gdb) attach 986317
+```
+
+Releasing the program:
+
+```console
+(gdb) detach
+```
+
+
+## Stopping Your Program
+
+`^C` stops the program. GDB takes control.
+
+`*(int *)0=27` crashes the program and falls under GDB's control.
+
+Continue running the code:
+
+```console
+(gdb) # c
+(gdb) continue
+```
+
+Single step through the source code. Similarly, single step through the machine code.
+
+```
+(gdb) # s
+(gdb) step
+(gdb) # si
+(gdb) stepi
+```
+
+Stepping can be tricky because there isn't always a sequential mapping of source code lines to machine code lines. Stepping through some machine code lines may make it look like the program is jumping back and forth between source code lines instead of running one-by-one in order.
+
+A courser-grained variant of the `step` command. Advancing to the next line of source code at the current function call level i.e. a single step but without worrying about function calls, stepping "over" them. Similarly, it has a machine code version.
+
+```console
+(gdb) # n
+(gdb) next
+(gdb) # ni
+(gdb) nexti
+```
+
+Finish the current function and then stop:
+
+```console
+(gdb) fin
+```
+
+You can use **breakpoints** to stop the program at a certain instruction, typically a function name. Creating a breakpoint:
+
+```console
+(gdb) # b
+(gdb) break analyze
+(gdb) break diff.c:19
+```
+
+Listing your current breakpoints and their numbers:
+
+```console
+(gdb) info break
+```
+
+Deleting a breakpoint by number:
+
+```console
+(gdb) del 19
+```
+
+All these commands control the **instruction pointer**, `%rip` on x86-64.
+
+You can use **watchpoints** to tell the program to run until the specified variable `p` changes value:
+
+```console
+(gdb) watch p
+```
+
+**How does GDB implement breakpoints?**
+
+GDB takes the process being debugged and modifies its machine code. It stomps on the machine code of the specified function/line/instruction by zapping the first byte with a special instruction that is guaranteed to cause the program to trap, allowing GDB to take control.
+
+**How does GDB implement watchpoints?**
+
+Single step through the code, and after each instruction, see if `p` has changed. This can be really slow unless youh have special hardware support for watchpoints. Many CPUs, including x86-64, have this support.
+
+
+## Other GDB Commands
+
+Printing a C expression (or register values):
+
+```console
+(gdb) # p
+(gdb) print expr
+(gdb) print $rax
+(gdb) print a[5]
+(gdb) print cos(3.0)
+```
+
+It does more than just allow you to look at data. It lets you run a subroutine like `cos` in the program, which can modify the data and/or call arbitrary code from other parts of the program.
+
+Disassembling a function to get the assembly code:
+
+```console
+(gdb) disas cos
+```
+
+You can set a **checkpoint** and then run the code from the checkpoint by its number:
+
+```console
+(gdb) checkpoint
+(gdb) restart 42
+```
+
+The inverse of `continue` is `reverse-continue` (`rc`). This means to start running the program backwards until it hits the most recent breakpoint that it passed. This tends to be *very expensive* because GDB has to set a bunch of checkpoints under the hood.
+
+```console
+(gdb) # rc
+(gdb) reverse-continue
+```
+
+For **cross-debugging**, you can specify what target you want to run in
+
+```console
+(gdb) target
+```
+
+This makes GDB run on some virtual machine or something.
+
+
+# Git Internals
+
+
+## Plumbing vs Porcelain
+
+The **plumbing** part of a program is the low-level part, where the actual work is done. It is not easy to use and not meant to be easy.
+
+The **porcelain** is the high-level commands for the end users.
+
+Git actually violates a common software engineering rule, which is "Just show the porcelain to the outside world. Don't expose your plumbing."
+
+Instead, Git wants to have two levels. Even at the low-level, it want to expose its basic model for how Git works if the user is willing to understand how it works.
+
+**Why is cloning so fast on a local machine?**
+
+If you explore your files with `ls -l`, you'll notice that the link count of some files are greater than expected.
+
+We see that a Git clone is created quickly partly because it did not have to make copies of the objects, and rather it used **hard links**.
+
+More specifically, it makes hard links to read-only files. It knows it's not going to cause a problem because people cannot modify them, so they're safe to share.
+
+A consequence is that most of the stuff in `.git` is stuff you cannot change. If you could, you can no longer clone it. If you try to be a troublemaker and use `chmod` and try editing such files, it could mess up other repositories using it (if that's even allowed at all).
+
+
+## The .git Directory
+
+The entire state of the repository sits in the special `.git` directory.
+
+There's an issue of compatibility. When a new version of Git comes out, it needs to be able to work with old repositories (**backwards compatibility**). The converse is not always true; repositories created by recent versions of Git may not necessarily work with older versions of Git. Thus, there are some files in the `.git` folder that are archaic,
+
+Some important files and directories in the `.git` subdirectory:
+
+- `branches` - obsolescent
+- `config` - repository-specific configuration
+- `description` - used for GitWeb, an attempt to put Git on the web
+- `HEAD` - where the current branch is
+- `hooks/*` - executable scripts that Git will invoke at certain "pressure points" (important triggers, like making a commit). By default, there are no working hooks; default ones all end with `.sample`, which illustrate what you might want to put in such hooks.
+- `index` - Git's plan for the future, a list of planned changes for the next commit. This is in binary data.
+- `info/exclude` - addition to `.gitignore`
+- `logs` - keeps track of where the branches have been (histories of branch tip locations)
+- `objects` - where the actual "repository" is, where the object database is stored
+- `refs` - where the branch tips and tags are (where all the "pointers" in the repository are)
+- `packed-refs` - optimized version of `refs`
+
+**Emacs Hooks ASIDE:** There is a script in the Emacs source code called `autogen.sh`. This script creates a bunch of Git hooks that tailor the repository to be the way the Emacs developers want it to be tailored. This is a nice "gatekeeper" approach that ensures your development is relatively clean.
