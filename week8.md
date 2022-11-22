@@ -597,3 +597,68 @@ Some important files and directories in the `.git` subdirectory:
 - `packed-refs` - optimized version of `refs`
 
 **Emacs Hooks ASIDE:** There is a script in the Emacs source code called `autogen.sh`. This script creates a bunch of Git hooks that tailor the repository to be the way the Emacs developers want it to be tailored. This is a nice "gatekeeper" approach that ensures your development is relatively clean.
+
+
+# Discussion Notes
+
+*Credit to Snigdha Kansal for sharing her discussion notes since I didn't attend lol*
+
+
+## The .git Subdirectory
+
+`objects` is the most important folder. It contains the commit objects, commit history, etc.
+
+Objects are stored two levels deep. The object is named with its 40 hex-digit SHA-1 hash value. The first two digits are the name of the subdirectory it resides in, and the remaining 38 digits are the file name. For example, an object with hash value 24b390b0e3489b71977f5c7242a4679287349242 would be stored at `.git/objects/24/b390b0e3489b71977f5c7242a4679287349242`.
+
+You can see the context of a Git object with:
+
+```shell
+git cat-file -p 24b390b0e3489b71977f5c7242a4679287349242
+```
+
+You can read the contents of Git objects in Python by decompressing it with the `zlib` module:
+
+```python
+import zlib
+object_path = ".git/objects/24/b390b0e3489b71977f5c7242a4679287349242"
+with open(object_path, "rb") as fp:
+    compressed = fp.read()
+content = zlib.decompress(compressed).decode("utf-8")
+print(content)
+```
+
+More information about how to approach Assignment 6 in the quick-start guide by Sashwath Sundher:
+
+- https://www.youtube.com/watch?v=r1wGH5b3V2E
+- https://www.youtube.com/watch?v=81sf3HBuwi4
+- https://www.youtube.com/watch?v=XY5yJ1LNdpc
+
+Git can also pack files. We can't see the individual object files this way.
+
+
+## Topological Sorting
+
+We can use **Kahn's algorithm** to implement **topological sorting**. No nodes are listed first in this ordering. More specifically, for every child-parent relationship, the parent appears before the child in the sequence. The pseudocode from [Wikipedia](https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm):
+
+```
+L ← Empty list that will contain the sorted elements
+S ← Set of all nodes with no incoming edge
+
+while S is not empty do
+    remove a node n from S
+    add n to L
+    for each node m with an edge e from n to m do
+        remove edge e from the graph
+        if m has no other incoming edges then
+            insert m into S
+
+if graph has edges then
+    return error   (graph has at least one cycle)
+else
+    return L   (a topologically sorted order)
+```
+
+
+## Final Review
+
+*Probably really shouldn't have skipped this one lol*
