@@ -398,13 +398,48 @@ This can get complicated, so ideally you'd want a **package manager**.
 
 You can view the dependencies of a program with:
 
-<!-- SOME COMMANDS I MISSED THEM -->
+<!-- Special thanks to Victor Chinnappan for telling me what were the commands Dr. Eggert used. I didn't attend lecture that day and Bruincast didn't raise the camera. -->
 
-```shell
-
+```console
+$ dnf deplist grep
+Not root, Subscription Management repositories not updated
+Last metadata expiration check: 1:16:41 ago on Mon 05 Dec 2022 04:57:02 PM PST.
+package: grep-3.1-6.el8.x86_64
+  dependency: /bin/sh
+   provider: bash-4.4.20-4.el8_6.x86_64
+  dependency: /sbin/install-info
+   provider: info-6.5-7.el8.x86_64
+  dependency: libc.so.6()(64bit)
+   provider: glibc-2.28-211.el8.x86_64
+  dependency: libc.so.6(GLIBC_2.14)(64bit)
+   provider: glibc-2.28-211.el8.x86_64
+  dependency: libc.so.6(GLIBC_2.2.5)(64bit)
+   provider: glibc-2.28-211.el8.x86_64
+  dependency: libc.so.6(GLIBC_2.3)(64bit)
+   provider: glibc-2.28-211.el8.x86_64
+  dependency: libc.so.6(GLIBC_2.3.4)(64bit)
+   provider: glibc-2.28-211.el8.x86_64
+  dependency: libc.so.6(GLIBC_2.4)(64bit)
+   provider: glibc-2.28-211.el8.x86_64
+  dependency: libc.so.6(GLIBC_2.5)(64bit)
+   provider: glibc-2.28-211.el8.x86_64
+  dependency: libpcre.so.1()(64bit)
+   provider: pcre-8.42-6.el8.x86_64
+  dependency: rtld(GNU_HASH)
+   provider: glibc-2.28-211.el8.i686
+   provider: glibc-2.28-211.el8.x86_64
 ```
 
-<!-- SOME COMMANDS I MISSED THEM -->
+And the dynamically linked libraries:
+
+```console
+$ ldd $(which grep)
+linux-vdso.so.1 (0x00007fff5ab88000)
+        libpcre2-8.so.0 => /lib64/libpcre2-8.so.0 (0x00007f365a1fd000)
+        libc.so.6 => /lib64/libc.so.6 (0x00007f3659e38000)
+        libpthread.so.0 => /lib64/libpthread.so.0 (0x00007f3659c18000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f365a481000)
+```
 
 We notice that for example, `grep` requires `sh` because `egrep` utilizes a *shell script*. `grep` also needs the C library.
 
