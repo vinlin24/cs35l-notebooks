@@ -224,3 +224,49 @@ obj_t table[10000];
 * Secondly, what if you never need that much memory? Your code would be bloated, consuming more resources than it needs to. Program startup would also be slower.
 
 Thus, we use the heap to *dynamically* allocate resources *as needed*.
+
+
+## HW5: Refactoring
+
+
+<!-- All of this is from discussion notes. -->
+
+Benefits of refactoring:
+
+* ➕ Readability and modularity
+* ➕ Easier to debug
+* ➕ Reduces compilation time (parallel compilation of multiple files)
+
+
+### System Calls
+
+
+A way for programs to interact with the operating system.
+
+The concept of an **operating system** was invented to facilitate interaction between programs and the hardware. Without it, it would be much easier for programs to maliciously attack hardware or cause I/O conflicts with read/write operations.
+
+Programs can make **system calls** *to* the operating system, and the operating system will then interact with the hardware in a well-defined way and report back with any output.
+
+
+### Categories of System Calls
+
+
+1. Process control `fork`
+2. File management `open`/`close` a file, `read`/`write`
+3. Device management
+4. information maintenance
+5. Communication
+6. Protection
+
+
+### The `write()` System Call
+
+
+```c
+#include <unistd.h>
+ssize_t write(int fd, const void *buf, size_t count);
+```
+
+- `fd` stands for file descriptor, which could be stdout or stderr.
+- `*buf` stands for buffer. This contains any data in it.
+- `count` is the number of bytes to be written to a file descriptor from the buffer.
