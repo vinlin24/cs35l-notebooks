@@ -1,3 +1,45 @@
+<!-- Week 6 Lecture Notes -->
+
+**Table of Contents**
+
+- [History \& Versioning](#history--versioning)
+  - [History of Version Control: Git](#history-of-version-control-git)
+    - [From User's Viewpoint](#from-users-viewpoint)
+    - [Getting Started with Git](#getting-started-with-git)
+    - [Exploring an Existing Project](#exploring-an-existing-project)
+    - [Looking at the Log](#looking-at-the-log)
+    - [Commit Messages](#commit-messages)
+  - [Viewing Differences](#viewing-differences)
+  - [Making Changes](#making-changes)
+  - [Configuration](#configuration)
+    - [The .gitignore File](#the-gitignore-file)
+    - [The .git/config File](#the-gitconfig-file)
+    - [The ~/.gitconfig File](#the-gitconfig-file-1)
+  - [Working with Remotes](#working-with-remotes)
+    - [Fetching](#fetching)
+    - [Pulling](#pulling)
+  - [Recovering from Mistakes](#recovering-from-mistakes)
+    - [If *Before* the Commit](#if-before-the-commit)
+    - [If *After* the Commit](#if-after-the-commit)
+  - [Branching](#branching)
+    - [Patching Across Branches](#patching-across-branches)
+    - [Manipulating Branches](#manipulating-branches)
+    - [Detached HEAD State](#detached-head-state)
+  - [Merging](#merging)
+    - [Merge Conflicts](#merge-conflicts)
+- [Discussion Notes: C Programming and Makefiles](#discussion-notes-c-programming-and-makefiles)
+  - [Compiling/Linking with GCC](#compilinglinking-with-gcc)
+  - [Makefile Basics](#makefile-basics)
+    - [Macros](#macros)
+    - [Phony Targets](#phony-targets)
+  - [Assignment 5: Refactoring](#assignment-5-refactoring)
+  - [System Calls](#system-calls)
+    - [Categories of System Calls](#categories-of-system-calls)
+    - [The `write()` System Call](#the-write-system-call)
+
+---
+
+
 # History & Versioning
 
 

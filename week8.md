@@ -1,4 +1,34 @@
+<!-- Week 8 Lecture Notes -->
 <!-- TODO: These notes aren't organized yet. -->
+
+**Table of Contents**
+
+- [Low Level Debugging (Continued)](#low-level-debugging-continued)
+  - [Static Checking (Continued)](#static-checking-continued)
+    - [GCC Useful Checks](#gcc-useful-checks)
+    - [GCC Extra Checks](#gcc-extra-checks)
+    - [Helping the Compiler with Source Code](#helping-the-compiler-with-source-code)
+  - [Dynamic (Runtime) Checking](#dynamic-runtime-checking)
+    - [GCC -fsanitize](#gcc--fsanitize)
+  - [Valgrind](#valgrind)
+  - [Portability Checking](#portability-checking)
+- [Debugging Strategies](#debugging-strategies)
+- [Debugging Tools](#debugging-tools)
+  - [How Debuggers Work](#how-debuggers-work)
+  - [Getting Started with Debugging](#getting-started-with-debugging)
+  - [GDB Commands](#gdb-commands)
+  - [Stopping Your Program](#stopping-your-program)
+  - [Other GDB Commands](#other-gdb-commands)
+- [Git Internals](#git-internals)
+  - [Plumbing vs Porcelain](#plumbing-vs-porcelain)
+  - [The .git Directory](#the-git-directory)
+- [Discussion Notes](#discussion-notes)
+  - [The .git Subdirectory](#the-git-subdirectory)
+  - [Topological Sorting](#topological-sorting)
+  - [Final Review](#final-review)
+
+---
+
 
 # Low Level Debugging (Continued)
 

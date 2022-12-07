@@ -1,4 +1,6 @@
-**Week 9 Lecture Notes**
+<!-- Week 9 Lecture Notes -->
+
+**Table of Contents**
 
 - [Git Internals (Continued)](#git-internals-continued)
   - [Comparison to File Systems](#comparison-to-file-systems)
@@ -43,7 +45,7 @@ It seems that Git uses a collection of files to represent a repository (and the 
 
 A local Git repository and the index are made up of **objects** and "other stuff". Git objects are like a tree of files in the file system.
 
-**REMINDER:** Every file has a unique index, namely the **inode number**, which you can see with `ls -`.
+**REMINDER:** Every file has a unique index, namely the **inode number**, which you can see with `ls -i`.
 
 Analogously, SHA-1 checksums for Git objects have the role that inode numbers have in file systems. They are comparable to pointers in C/C++, values that uniquely identify the actual objects they reference.
 
@@ -556,7 +558,7 @@ def dist(x, y)
     return sqrt(x*x + y*y)
 ```
 
-One approach for the translated form can be some symbol table with symbols pointing to tree structures, which are representations of the source code divided into elementary parts, like the function time, the arguments, the return expression, etc.
+One approach for the translated form can be some symbol table with symbols pointing to tree structures, which are representations of the source code divided into elementary parts, like the function name, the arguments, the return expression, etc.
 
 The interpreter will then walk through the data structure and evaluate the nodes. It's as if the source code of the interpreter has some kind of function like:
 
@@ -690,7 +692,7 @@ The first GCC compiler was compiled with an earlier C compiler, which in turn wa
 
 You want to modularize your compiler. You don't want to have a separate compiler for each platform. The GCC source code can be split up into machine-independent and machine-dependent parts. The latter would have separate modules for RISC-V, ARM, x86-64, etc. The majority of the code is shared code that can be consulted on any architecture.
 
-There's also the concern of language support. GCC can compile C, C++, Java etc., so within the machine-independent part of the code, a portion is modularized into language-dependent code. 
+There's also the concern of language support. GCC can compile C, C++, Java etc., so within the machine-independent part of the code, a portion is modularized into language-dependent code.
 
 The machine-independent, language-independent part of the source code can be thought of as the "heart"/"core" of GCC. Ideally, you want as much of the source code as possible to be in this category.
 
@@ -702,8 +704,6 @@ The machine-independent, language-independent part of the source code can be tho
 +------+       +--------+
 | Java |       | x86-64 |
 +------+-------+--------+
-^              ^        ^
-|--------------|--------|
 (machine-indep) (machine-dep)
 ```
 

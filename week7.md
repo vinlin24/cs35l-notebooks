@@ -1,4 +1,4 @@
-<!-- week7.md -->
+<!-- Week 7 Lecture Notes -->
 
 **Table of Contents**
 

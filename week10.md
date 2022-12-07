@@ -1,6 +1,8 @@
 <!-- Week 10 Lecture Notes -->
 <!-- I switched to '*' for bullet points instead of '-' ehe -->
 
+**Table of Contents**
+
 - [Backups](#backups)
   - [Failure modes](#failure-modes)
   - [Performing Backups](#performing-backups)
@@ -52,6 +54,7 @@
     - [Technical Protection](#technical-protection)
   - [Software Licensing](#software-licensing)
 
+---
 
 
 # Backups
