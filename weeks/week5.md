@@ -450,10 +450,14 @@ git diff HEAD~4..HEAD
 git diff HEAD^..HEAD
 ```
 
+<!-- Oooh this is actually wrong, it's the other way around. Fixed in my topic-organized notes. -->
+
 The special syntax around the `HEAD` ref:
 
 - The tilde `~` denotes ancestry. `HEAD~`/`HEAD~1` is `HEAD`'s parent, `HEAD~2` is the the grandparent, stc.
 - The caret `^` denotes the first parent of the tip of the current branch. TL;DR it helps resolve multiple ancestry, which is not something I will be bothering with any time soon.
+
+<!-- Above is wrong. Should be the other way around. -->
 
 
 ### Branches
