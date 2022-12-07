@@ -378,6 +378,12 @@ Note that these features means the characters `+` `{` `}` `(` `|` `)` become **m
 
 **NOTE:** `{}` is *also* a **globbing pattern** to the shell, where `{a,b,c,...}` expands to `a b c ...`, so remember to [quote your regex](#meta-character-dangers)!
 
+Oh yeah and *apparently* in EREs, you can use the OR `|` operator outside of a group `()`:
+
+```
+hello|there
+```
+
 
 ### Both BREs and EREs
 
@@ -398,6 +404,12 @@ There are also **named character sets** in `grep`:
 [[:alpha]$/]    # match every alphabetic character or $, /
 [[:alpha]$/\]   # backslash isn't special inside a bracket
 ```
+
+Common use cases of regular expressions in things like web applications include:
+
+* Validating phone numbers
+* Validating emails
+* Extracting or processing such information
 
 
 ## The `sed` Command
