@@ -1,6 +1,53 @@
 # The Shell
 
 
+## Operating Systems
+
+
+* Ubuntu is an example of a Linux distro (distribution).
+* Debian is the upstream distro for Ubuntu from which it inherits thousands of *packages*. You can can check the packages with `dpkg -l`.
+* Linux is an OS **kernel**.
+
+**Software levels of abstraction:**
+
+```
++------------------------+
+|          apps          |
++------------+-----------+
+|            |   libs    |
+|   kernel   +-----------+
+|            | C stdlib  |
++------------+-----------+
+|        hardware        |
++------------------------+
+```
+
+sh and Emacs and any of their independent instances are themselves **applications**, one of many that sit atop the operating system.
+
+**Introspection**: When a program looks at itself ("when we use tools to find out more about our tools"). Knowing how to perform introspection is a portable, universal skill that lets you explore or relearn something about an unfamiliar program.
+
+
+### Superusers and the Concept of Privilege
+
+
+* **Superusers** ("root") are the only ones with permission to `kill` PID 1, `system`.
+* The **sudo** command lets you run a command AS "root":
+
+```shell
+sudo sh
+```
+
+**Why have multiple users instead of just root?**
+
+The concept of **minimization of privileges** aka "principle of least privilege". If a program breaks or a user makes a mistake, the damage is limited.
+
+By the way, you can kill a program by PID with:
+
+```shell
+kill PID1 PID2 ...
+```
+
+
 ## The `(ba)sh` Program
 
 
@@ -154,6 +201,7 @@ ls ~/*html | sort > list_html.txt
 
 * Like the task manager: lists processes and their information
 * For a live view, use the `top` program instead
+* You can also use `less /proc/cpuinfo` to view information about the currently running processor
 * By default lists the processes on the local machine, but you can use some useful flags like:
 
 ```shell
