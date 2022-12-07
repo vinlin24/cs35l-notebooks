@@ -1,10 +1,8 @@
-# Version Control with Git
+# Version Control with Git: Porcelain Commands
 
 
-## From User's Viewpoint
+## From the User's Viewpoint
 
-
-<!-- TODO: IDK where this goes -->
 
 This is usually from the perspective of a software developer/manager, and in some cases, the end user trying to use the software.
 
@@ -13,10 +11,6 @@ Three things are under Git's control:
 0. Keep track of the working files (ordinary files), your source code, the "current state" of the repository.
 1. Object database recording history of project development, where the project is modeled with a tree of files.
 2. **Index**, recording your plans for the *future*.
-
-The `git commit` command *appends the index to the history*.
-
-<!-- TODO: IDK where this goes -->
 
 
 ## Getting Started
@@ -142,7 +136,7 @@ The remaining lines should be at most 50 lines, each at most 72 characters per l
 ## Working Files and Index
 
 
-Git's version of `ls`, where it displays the current *working files*.
+Technically a plumbing command, this is Git's version of `ls`, where it displays the current *working files*:
 
 ```shell
 git ls-files
@@ -170,7 +164,7 @@ The **index** is what you have ready for the next commit, but have not committed
 
 <!-- From discussion notes. -->
 
-**Commits** are like checkpoints for your code, snapshots that are saved in the repository.
+**Commits** are like checkpoints for your code, snapshots that are saved in the repository. Commits *append the index to the history*.
 
 You know how it goes:
 
@@ -639,7 +633,7 @@ git checkout -b NAME [REF=HEAD]
 git checkout -b newbr HEAD^^
 ```
 
-Branch names must be unique. Git won't let you create or rename a branch to an existing name. As we see later with [Git internals](Git%20Internals.md), this is because information about branches are stored as physical files in the file system under `.git`.
+Branch names must be unique. Git won't let you create or rename a branch to an existing name. As you know from HW6, this is because information about branches are stored as physical files in the file system under `.git`.
 
 Because branches are just names, *deleting* a branch does not modify any commits, just a reference that used to point to one.
 
@@ -676,6 +670,12 @@ git checkout REF
 ```
 
 But this puts you in **detached HEAD state**, which is when `HEAD` is not pointing to any branch tip. Git warns you that you can look around but not make further changes. You cannot commit in this state because Git does not know how.
+
+However, if you want to make changes from this version of the codebase, you can checkout to a new branch off this commit as you normally would:
+
+```shell
+git checkout -b mybranch
+```
 
 
 ## (1) Merging
