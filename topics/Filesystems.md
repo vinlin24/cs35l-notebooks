@@ -107,6 +107,14 @@ linkname: No such file or directory
 
 A symbolic link is always interpreted *when you use it*, NOT when you create it. If a dangling symlink is pointing to a non-existent `foo`, but then you create a new file `foo`, the symlink works again.
 
+<!-- From midterm review. -->
+
+**What is the main difference between a hard link and a symbolic link?**
+
+A hard link increments the file object's reference count. A symbolic link does not increment the file's reference count.
+
+Deleting all hard links to a file (and ceasing all operations that use the file) deletes the file. Deleting symbolic links do not affect the underlying file. A symbolic link can become dangling if the underlying file is deleted.
+
 
 ### Destroying a File
 
@@ -203,6 +211,13 @@ filename: Too many levels of symbolic links
 
 **Hard links to symbolic links?** Yes.
 
+<!-- This was originally part of the midterm review in week4.md. -->
+
+**Give an example of how renaming a dangling symbolic link can transform it into a non-dangling symbolic link.**
+
+Soft links can be linked to a relative path. Suppose `c` has content `b`, but `b` only exists as `temp/b` relative to the current working directory. We can use `mv c temp` to make the relative path `b` now work since `c` is now in the same directory as `b`.
+
+
 
 ### Secondary Storage
 
@@ -277,6 +292,27 @@ chmod: changing permissions of 'bin/sh': Operation not permitted
 ```
 
 
+### Sensible Permissions
+
+
+<!-- This was originally part of the midterm review in week4.md. -->
+
+A set of rwx permissions on a file is called "**sensible**" if the owner has al the permissions of the group and the group has all the permission of others. For example:
+
+- 551 (r-x|r-x|--x) is sensible. The owner's permissions are a *superset* of those of the group.
+- 467 (r--|rw-|rwx) is not. The group has `w` permission while the owner doesn't.
+
+Non-sensible permissions don't make sense because the *owner* is considered to be the most closely related to the file, so they should have the most access.
+
+**How many distinct sensible permissions are there?**
+
+Solution:
+
+Consider r, w, x permissions separately. For each of then, there are 4 ways to gst sensible permissions for u, g, and o (in binary, 000, 100, 110, 111).
+
+Total: $4^3=64$
+
+
 ## So How Do You *Actually* Update a File?
 
 
@@ -284,3 +320,9 @@ Options:
 
 1. Write directly to a file `F`. But if some other program reads the file at the same time, problems could arise. You want to be able to update files (and databases) **atomically**.
 2. Write to a temporary file `F#` and then `mv F# F`. The downside obviously is that it occupies twice the space on drive. The upside is that because `mv` is **atomic**, any other processes attempting to use the file at the same time will either get the old file or the new file, not some intermediate state.
+
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });
+</script>

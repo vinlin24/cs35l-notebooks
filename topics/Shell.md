@@ -292,6 +292,56 @@ hey there's\n"general kenobi"
 Quoting can even include newlines itself (RET at the command line), but that's so controversial that it's probably going to be removed in an upcoming POSIX standard release.
 
 
+## Globbing (Wildcard) Pattern Matchinig
+
+
+<!-- This section used to be part of the Midterm discussion review in week4.md. -->
+
+Used in file management: `man 7 glob`
+
+The shell will **expand** strings containing these special characters to every string that matches the pattern, separated by whitespaces. For example, `*` in a directory containing files named `file1`, `file2`, and `file3` would expand to:
+
+```console
+$ echo *
+file1 file2 file3
+```
+
+This is done *by the shell* and NOT the programs typically associated with them like `ls`. When you run something like `ls hello/*`, bash first expands the string `hello/*` to `hello/some_file hello/another_file ...` and *then* passes it to `ls`.
+
+- `?` - match one, any character
+- `*` - match any number of characters, including the empty string
+- `{pdf,jpeg}` - match multiple literals
+- `[]` - character set that supports *ranges*, similar to regex
+- `[!]` - complement of a character set if `!` is the first character
+- `\` - escape character
+
+
+## Shell Scripting Constructs
+
+
+### Looping
+
+
+```sh
+for i in {1..100}
+do
+    echo $i
+done
+```
+
+
+### Conditionals
+
+```sh
+if [ condition ]
+then
+    # body
+fi
+```
+
+You can use the `expr` command to evaluate an expression. You can also use **compound expansion** with `((expression))` syntax.
+
+
 ## The `grep` Command and Pattern Matching
 
 
@@ -383,6 +433,16 @@ Oh yeah and *apparently* in EREs, you can use the OR `|` operator outside of a g
 ```
 hello|there
 ```
+
+<!-- From midterm review. -->
+
+**EXAMPLE: Write an ERE that only matches numbers between 0 and 255.**
+
+```
+^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$
+```
+
+**TIP:** Make sure to remember to include `^$`! That constrains the number of digits you can match, and more importantly, it ensures no partial matching.
 
 
 ### Both BREs and EREs

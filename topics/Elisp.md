@@ -469,6 +469,32 @@ The function `point` returns the current position of the cursor as a number.
 **TIP:** You can use `(global-set-key KEY COMMAND)` to define a custom key bind.
 
 
+### Example Customization
+
+
+<!-- This was originally part of the midterm review in week4.md. -->
+
+**Explain how to arrange for Emacs to treat C-t as a command that causes Emacs to issue a message like this in the echo area:**
+
+*some time string I missed it lol*
+
+Solution:
+
+1. Define a function.
+2. Use `current-time-string` to get current time, and use `concat` to concetatne time with other text
+3. Make the function `interactive`
+4. Use `message` for output in the echo area
+   ```lisp
+   (defun print-time ()
+       (interactive)
+       (message (concat "It is now" (current-time-string) ".")))
+   ```
+5. Create the `C-t` key binding:
+   ```
+   M-x global-set-key C-t print-time RET
+   ```
+
+
 ## ASIDE: Concept of Pure Functions
 
 
