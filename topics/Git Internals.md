@@ -381,7 +381,7 @@ A weakness is that if the private key `K` is leaked out, attackers can put out a
 
 
 
-### Cryptography Aside
+### ASIDE: Cryptography
 
 
 **Private key system**
