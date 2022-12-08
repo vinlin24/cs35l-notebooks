@@ -259,9 +259,9 @@ flash --> disk --> optical tape
 
 Remove old data that you don't need anymore before backing up.
 
-It's tedious to determine which data isn't needed anymore, so a lot of this is now done automatically.
+It's tedious to determine which data isn't needed anymore, so a lot of this is now done automatically. Of course, this has the downside where programs might decide to remove data that users still want.
 
-s
+**Encryption**
 
 Guard against problems like attackers from the inside stealing and/or selling data to other agents.
 
