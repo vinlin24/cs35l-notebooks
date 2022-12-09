@@ -1,7 +1,7 @@
 # The Internet
 
 
-# Client-Server Computing
+## Client-Server Computing
 
 
 The Client-Server model, where many browser instances can interact with a single web server, which in turn may be connected to some database:
@@ -18,7 +18,7 @@ C                    ^     |
 ```
 
 
-## Alternatives to the Client-Server Model
+### Alternatives to the Client-Server Model
 
 
 0. **Single computer** (CS 31 assignments, where the logistics of networking, OS, etc. were abstracted away).
@@ -28,7 +28,7 @@ C                    ^     |
 2. **Primary secondary**: One primary machine that serves as the "overseer" - it keeps track of how the application is split up among numerous secondary servers. The secondary servers receive a small "subproblem" of the application from the primary server and return any results.
 
 
-## Performance and Correctness Issues
+### Performance and Correctness Issues
 
 
 Traditional programming performance metrics:
