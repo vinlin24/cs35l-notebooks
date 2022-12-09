@@ -79,7 +79,7 @@ Building blocks for the *aaS systems.
 Virtual servers are slower, but a lot cheaper. There are a few ways to build a VM:
 
 
-## Method 0
+### Method 0
 
 
 Write a program, typically in C, that implements the instruction set of the architecture you're simulating.
@@ -99,7 +99,7 @@ switch (*ip++) {
 ```
 
 
-## Method 1
+### Method 1
 
 
 You assume that the virtual machine and physical machine have the same instruction set. You let your program run on the actual hardware.
@@ -126,7 +126,7 @@ Each VM *thinks* it has the full capability of a real machine. Of course, there'
 * If they're all running computations, they'd be independently consuming physical RAM.
 
 
-## Method 2 (Containerization)
+### Method 2 (Containerization)
 
 
 You assume that the virtual and physical machine have the same instruction set like before, but also that the virtual OS is the same as the physical OS, say Linux.
