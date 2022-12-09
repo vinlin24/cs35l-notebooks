@@ -17,10 +17,10 @@ Backups provide ways to recover from **failure modes**:
   * Total failure: the entire drive is dead.
   * Partial failure: a few blocks go bad.
   * Corrupted data with no indication (a silent and very serious error!).
-* **Operational failure**: someone responsible for maintaining the software makes a mistake, like erasing. **data**
+* **Operational failure**: someone responsible for maintaining the software makes a mistake, like erasing data.
 * **External attackers**: hackers that break into your system, encrypt all your data, and hold it ransom.
 * **Data corruption**: due to power outage
-* **Cosmic rays**: can cause a bit flip in the RAM or even flash an open computer.
+* **Cosmic rays**: can cause a bit flip in the RAM or even flash on an open computer.
 * etc.
 
 > **ASIDE:** You can protect against bit flips by using **ECC RAM**. For every amount of bits, you have several **check bits** that you can use to test if a bit was flipped and correct it. All SEASnet servers and high-end work computers in general have ECC RAM. Of course, this increases the cost due to more testing required to ensure reliability.
@@ -217,7 +217,7 @@ When you modify `bigcopy`, your `bigcopy` just "remembers" (in its underlying da
 
 This has recently become the *default* behavior of the GNU `cp` command.
 
-This is known as **lazy copying**. Eventually, when you modify every block in your copy, *then* you make a copy of every block. Until, then you do it **lazily**, that is, *only as needed*.
+This is known as **lazy copying**. Eventually, when you modify every block in your copy, *then* you will have made a copy of every block. Until then, you do it **lazily**, that is, *only as needed*.
 
 This strategy has a name: **copy on write (CoW)**.
 
