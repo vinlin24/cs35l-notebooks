@@ -33,9 +33,9 @@ I tried to keep as much information as I could from my original notes, which in 
 ## Viewing Markdown Files on VS Code
 
 
-**Pro tip:** If you're viewing a source file in VS Code, you can use `Ctrl+Shift+O` to jump to a symbol in the workspace. For Markdown, that corresponds to headers, so you can use that to preview the outline and jump around.
+**Pro tip:** If you're viewing a source file in VS Code, you can use `Ctrl+Shift+O` to jump to a symbol in the current editor and `Ctrl+T` to jump to a symbol in the entire workspace. For Markdown, that corresponds to headers, so you can use that to preview the outline and jump around.
 
-**Pro tip:** If you're viewing these source files on VS Code, you can use `Ctrl+Shift+V` to render the Markdown in a separate tab and read that one.
+**Pro tip:** If you're viewing these source files on VS Code, you can use `Ctrl+Shift+V` to render the Markdown in a separate tab (or `Ctrl+K V` to open it to the side) and read that one.
 
 
 ## Exporting Markdown to PDF
