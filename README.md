@@ -44,3 +44,10 @@ I tried to keep as much information as I could from my original notes, which in 
 There are [many ways to do this](https://gist.github.com/justincbagley/ec0a6334cc86e854715e459349ab1446), but I personally use the [Markdown PDF extension](https://marketplace.visualstudio.com/items?itemName=yzane.markdown-pdf) in VS Code to export my documents. After you install the extension, simply go to the `.md` file you want to export, open the command palette (Ctrl+Shift+P), and search for 'Markdown PDF: Export (pdf)'.
 
 Documents that use LaTeX expressions have a special `<script>` element appended at the end to help this extension correctly render the math expressions, something I had trouble getting to work with the other methods.
+
+
+## Contributing
+
+
+If you spot any errors or would like to make improvements, feel free to open an
+issue or pull request!
