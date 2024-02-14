@@ -33,15 +33,19 @@ I tried to keep as much information as I could from my original notes, which in 
 ## Viewing Markdown Files on VS Code
 
 
-**Pro tip:** If you're viewing a source file in VS Code, you can use `Ctrl+Shift+O` to jump to a symbol in the current editor and `Ctrl+T` to jump to a symbol in the entire workspace. For Markdown, that corresponds to headers, so you can use that to preview the outline and jump around.
+> [!TIP] Pro Tip
+>
+> If you're viewing a source file in VS Code, you can use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> to jump to a symbol in the current editor and <kbd>Ctrl</kbd>+<kbd>T</kbd> to jump to a symbol in the entire workspace. For Markdown, that corresponds to headers, so you can use that to preview the outline and jump around.
 
-**Pro tip:** If you're viewing these source files on VS Code, you can use `Ctrl+Shift+V` to render the Markdown in a separate tab (or `Ctrl+K V` to open it to the side) and read that one.
+> [!TIP] Pro Tip
+>
+> If you're viewing these source files on VS Code, you can use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> to render the Markdown in a separate tab (or <kbd>Ctrl</kbd>+<kbd>K</kbd> <kbd>V</kbd> to open it to the side) and read that one.
 
 
 ## Exporting Markdown to PDF
 
 
-There are [many ways to do this](https://gist.github.com/justincbagley/ec0a6334cc86e854715e459349ab1446), but I personally use the [Markdown PDF extension](https://marketplace.visualstudio.com/items?itemName=yzane.markdown-pdf) in VS Code to export my documents. After you install the extension, simply go to the `.md` file you want to export, open the command palette (Ctrl+Shift+P), and search for 'Markdown PDF: Export (pdf)'.
+There are [many ways to do this](https://gist.github.com/justincbagley/ec0a6334cc86e854715e459349ab1446), but I personally use the [Markdown PDF extension](https://marketplace.visualstudio.com/items?itemName=yzane.markdown-pdf) in VS Code to export my documents. After you install the extension, simply go to the `.md` file you want to export, open the command palette (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>), and search for 'Markdown PDF: Export (pdf)'.
 
 Documents that use LaTeX expressions have a special `<script>` element appended at the end to help this extension correctly render the math expressions, something I had trouble getting to work with the other methods.
 
