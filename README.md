@@ -3,7 +3,7 @@
 
 **Course Name:** Software Construction
 
-**Professor:** Paul R. Eggert <br>
+**Professor:** [Paul R. Eggert](https://samueli.ucla.edu/people/paul-eggert/) <br>
 **Section:** 1E (**TA:** Yihan Wang, **LA:** Qianli Wu)
 
 
@@ -57,5 +57,13 @@ Documents that use LaTeX expressions have a special `<script>` element appended 
 ## Contributing
 
 
-If you spot any errors or would like to make improvements, feel free to open an
-issue or pull request!
+If you spot any errors or would like to make improvements, feel free to open an issue or pull request!
+
+
+## Further Reading
+
+
+Other great digital notebooks for CS 35L:
+
+* From my LA Qianli: https://github.com/Qianli-Wu/CS35L_notes
+* From another LA Ning Wang: https://github.com/NingWang1729/Introduction-to-Software-Construction
