@@ -29,7 +29,7 @@ Each notebook has an H1 header that describes the main topics covered in that no
 
 I tried to keep as much information as I could from my original notes, which in turn was almost a transcript of every lecture. I hope to be able to use these notebooks for my own future reference, so it's a little verbose. Think of them altogether as a textbook. I don't advise printing them out for the final due to the time crunch, but if you want to, at least they're organized with specific topics now.
 
-> [!WARNING] Deprecation Warning
+> [!WARNING]
 >
 > The original notebooks organized by the 10 weeks of lecture and discussion are still kept in the [`weeks/`](weeks/) directory, but I am no longer maintaining them. They might have some typos, errors, or are missing some information to make it altogether coherent. Future edits will only concern the new notebooks organized by topic.
 
@@ -37,11 +37,11 @@ I tried to keep as much information as I could from my original notes, which in 
 ## Viewing Markdown Files on VS Code
 
 
-> [!TIP] Pro Tip
+> [!TIP]
 >
 > If you're viewing a source file in VS Code, you can use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> to jump to a symbol in the current editor and <kbd>Ctrl</kbd>+<kbd>T</kbd> to jump to a symbol in the entire workspace. For Markdown, that corresponds to headers, so you can use that to preview the outline and jump around.
 
-> [!TIP] Pro Tip
+> [!TIP]
 >
 > If you're viewing these source files on VS Code, you can use <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> to render the Markdown in a separate tab (or <kbd>Ctrl</kbd>+<kbd>K</kbd> <kbd>V</kbd> to open it to the side) and read that one.
 
